@@ -7,9 +7,9 @@ public class Buyer extends User {
     public Buyer() {
         this(
                 "B000",
-                "Default Buyer",
-                "buyer@gmail.com",
-                "Unknown Address"
+                "Buyer1",
+                "buyer1@gmail.com",
+                "123 Main St"
         );
     }
 
