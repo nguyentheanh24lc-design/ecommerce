@@ -1,10 +1,18 @@
+import model.Buyer;
+
 public class Main {
 
     public static void main(String[] args) {
 
-        System.out.println("=================================");
-        System.out.println(" E-COMMERCE MANAGEMENT SYSTEM ");
-        System.out.println("=================================");
+        Buyer buyer = new Buyer(
+                "B001",
+                "Nguyen Van A",
+                "vana@gmail.com",
+                "Ha Noi"
+        );
 
+        buyer.displayRole();
+
+        System.out.println(buyer);
     }
 }
