@@ -1,5 +1,6 @@
 import model.Admin;
 import model.Buyer;
+import model.Order;
 import model.OrderItem;
 import model.Product;
 import model.Seller;
@@ -132,6 +133,61 @@ public static void main(String[] args) {
     System.out.println(
             "After decreasing quantity: "
                     + orderItem
+    );
+
+    System.out.println("\n--- ORDER TEST ---");
+
+    Buyer orderBuyer = new Buyer(
+            "B002",
+            "Pham Van D",
+            "phamvand@gmail.com",
+            "Ho Chi Minh City"
+    );
+
+    Order order = new Order(
+            "O001",
+            orderBuyer
+    );
+
+    order.addItem(product1, 1);
+    order.addItem(product2, 2);
+    order.addItem(product3, 3);
+
+    System.out.println(order);
+
+    System.out.println("\n--- ORDER ITEMS ---");
+
+    for (OrderItem item : order.getItems()) {
+        System.out.println(item);
+    }
+
+    System.out.println(
+            "\nTotal quantity: "
+                    + order.getTotalQuantity()
+    );
+
+    System.out.println(
+            "Order total: "
+                    + order.calculateTotal()
+    );
+
+    System.out.println(
+            "\nCurrent status: "
+                    + order.getStatus()
+    );
+
+    order.confirmOrder();
+
+    System.out.println(
+            "After confirm: "
+                    + order.getStatus()
+    );
+
+    order.completeOrder();
+
+    System.out.println(
+            "After complete: "
+                    + order.getStatus()
     );
 }
 }
