@@ -1,5 +1,6 @@
 import model.Admin;
 import model.Buyer;
+import model.OrderItem;
 import model.Product;
 import model.Seller;
 import model.User;
@@ -45,7 +46,6 @@ public static void main(String[] args) {
         user.displayRole();
         System.out.println(user);
     }
-
 
     Product product1 = new Product(
             "P001",
@@ -105,5 +105,33 @@ public static void main(String[] args) {
                 "Product not found."
         );
     }
+
+    System.out.println("\n--- ORDER ITEM TEST ---");
+
+    OrderItem orderItem = new OrderItem(
+            product1,
+            2
+    );
+
+    System.out.println(orderItem);
+
+    System.out.println(
+            "Subtotal: "
+                    + orderItem.calculateSubtotal()
+    );
+
+    orderItem.increaseQuantity(1);
+
+    System.out.println(
+            "After increasing quantity: "
+                    + orderItem
+    );
+
+    orderItem.decreaseQuantity(1);
+
+    System.out.println(
+            "After decreasing quantity: "
+                    + orderItem
+    );
 }
 }
