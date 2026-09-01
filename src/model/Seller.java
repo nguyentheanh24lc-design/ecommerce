@@ -1,57 +1,122 @@
 package model;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 public class Seller extends User {
 
-    private String shopName;
+private String shopName;
 
-    public Seller() {
-        this(
-                "S000",
-                "Seller1",
-                "seller1@gmail.com",
-                "Shop1"
+private List<Product> products;
+
+public Seller() {
+    this(
+            "S000",
+            "Seller1",
+            "seller1@gmail.com",
+            "Shop1"
+    );
+}
+
+public Seller(
+        String id,
+        String name,
+        String email,
+        String shopName) {
+
+    super(id, name, email);
+
+    setShopName(shopName);
+
+    this.products = new ArrayList<>();
+}
+
+public String getShopName() {
+    return shopName;
+}
+
+public void setShopName(String shopName) {
+
+    if (shopName == null ||
+            shopName.trim().length() < 2) {
+
+        throw new IllegalArgumentException(
+                "Shop name must contain at least 2 characters."
         );
     }
 
-    public Seller(
-            String id,
-            String name,
-            String email,
-            String shopName) {
+    this.shopName = shopName.trim();
+}
 
-        super(id, name, email);
-        setShopName(shopName);
+public List<Product> getProducts() {
+    return Collections.unmodifiableList(products);
+}
+
+public boolean addProduct(Product product) {
+
+    if (product == null) {
+        throw new IllegalArgumentException(
+                "Product cannot be null."
+        );
     }
 
-    public String getShopName() {
-        return shopName;
+    if (products.contains(product)) {
+        return false;
     }
 
-    public void setShopName(String shopName) {
+    products.add(product);
 
-        if (shopName == null ||
-                shopName.trim().length() < 2) {
+    return true;
+}
 
-            throw new IllegalArgumentException(
-                    "Shop name must contain at least 2 characters."
-            );
+public boolean removeProduct(Product product) {
+
+    if (product == null) {
+        return false;
+    }
+
+    return products.remove(product);
+}
+
+public Product findProductById(String productId) {
+
+    if (productId == null ||
+            productId.trim().isEmpty()) {
+
+        return null;
+    }
+
+    for (Product product : products) {
+
+        if (product.getId().equalsIgnoreCase(
+                productId.trim())) {
+
+            return product;
         }
-
-        this.shopName = shopName.trim();
     }
 
-    @Override
-    public void displayRole() {
-        System.out.println("Role: Seller");
-    }
+    return null;
+}
 
-    @Override
-    public String toString() {
-        return "Seller{" +
-                "id='" + getId() + '\'' +
-                ", name='" + getName() + '\'' +
-                ", email='" + getEmail() + '\'' +
-                ", shopName='" + shopName + '\'' +
-                '}';
-    }
+public int getProductCount() {
+    return products.size();
+}
+
+@Override
+public void displayRole() {
+    System.out.println("Role: Seller");
+}
+
+@Override
+public String toString() {
+
+    return "Seller{" +
+            "id='" + getId() + '\'' +
+            ", name='" + getName() + '\'' +
+            ", email='" + getEmail() + '\'' +
+            ", shopName='" + shopName + '\'' +
+            ", productCount=" + products.size() +
+            '}';
+}
 }

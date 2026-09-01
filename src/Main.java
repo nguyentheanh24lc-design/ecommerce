@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Main {
-
 public static void main(String[] args) {
 
     System.out.println("=================================");
@@ -24,12 +23,14 @@ public static void main(String[] args) {
             "Ha Noi"
     ));
 
-    users.add(new Seller(
+    Seller seller = new Seller(
             "S001",
             "Tran Van B",
             "seller@gmail.com",
             "Tech Store"
-    ));
+    );
+
+    users.add(seller);
 
     users.add(new Admin(
             "A001",
@@ -45,32 +46,64 @@ public static void main(String[] args) {
         System.out.println(user);
     }
 
-    Product product = new Product(
+
+    Product product1 = new Product(
             "P001",
             "Laptop Dell",
             25000000,
             10
     );
 
-    System.out.println("\n--- PRODUCT TEST ---");
-
-    System.out.println(product);
-
-    product.increaseStock(5);
-
-    System.out.println(
-            "Stock after increase: " + product.getStock()
+    Product product2 = new Product(
+            "P002",
+            "Mechanical Keyboard",
+            1500000,
+            20
     );
 
-    product.decreaseStock(3);
+    Product product3 = new Product(
+            "P003",
+            "Gaming Mouse",
+            800000,
+            30
+    );
+
+    seller.addProduct(product1);
+    seller.addProduct(product2);
+    seller.addProduct(product3);
+
+    System.out.println("\n--- SELLER PRODUCT LIST ---");
 
     System.out.println(
-            "Stock after decrease: " + product.getStock()
+            "Shop: " + seller.getShopName()
     );
 
     System.out.println(
-            "Total products created: "
-                    + Product.getTotalProducts()
+            "Total products: "
+                    + seller.getProductCount()
     );
+
+    for (Product product : seller.getProducts()) {
+        System.out.println(product);
+    }
+
+    System.out.println("\n--- FIND PRODUCT ---");
+
+    Product foundProduct =
+            seller.findProductById("P002");
+
+    if (foundProduct != null) {
+
+        System.out.println(
+                "Product found: "
+                        + foundProduct
+        );
+
+    } else {
+
+        System.out.println(
+                "Product not found."
+        );
+    }
 }
 }
