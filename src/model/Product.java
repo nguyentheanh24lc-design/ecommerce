@@ -2,7 +2,7 @@ package model;
 
 import java.util.Objects;
 
-public class Product {
+public class Product implements Identifiable {
 
 public static final double MIN_PRICE = 0.0;
 

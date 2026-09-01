@@ -2,7 +2,7 @@ package model;
 
 import java.util.Objects;
 
-public abstract class User {
+public abstract class User implements Identifiable {
 
     public static final String DEFAULT_NAME = "User 1";
 

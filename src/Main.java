@@ -1,5 +1,6 @@
 import model.Admin;
 import model.Buyer;
+import model.Identifiable;
 import model.Order;
 import model.OrderItem;
 import model.Product;
@@ -188,6 +189,22 @@ public static void main(String[] args) {
     System.out.println(
             "After complete: "
                     + order.getStatus()
+    );
+
+    System.out.println("\n--- INTERFACE TEST ---");
+
+    Identifiable identifiableProduct = product1;
+
+    System.out.println(
+        "Product has ID P001: "
+                + identifiableProduct.hasId("P001")
+    );
+
+    Identifiable identifiableOrder = order;
+
+    System.out.println(
+        "Order has ID O001: "
+                + identifiableOrder.hasId("O001")
     );
 }
 }

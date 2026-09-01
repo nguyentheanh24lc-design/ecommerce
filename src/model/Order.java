@@ -6,7 +6,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-public class Order {
+public class Order implements Identifiable {
 public static final String STATUS_PENDING = "PENDING";
 public static final String STATUS_CONFIRMED = "CONFIRMED";
 public static final String STATUS_COMPLETED = "COMPLETED";
