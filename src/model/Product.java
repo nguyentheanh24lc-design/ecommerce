@@ -1,160 +1,157 @@
 package model;
 
+import exception.InvalidPriceException;
+
 import java.util.Objects;
 
 public class Product implements Identifiable {
 
-public static final double MIN_PRICE = 0.0;
+    public static final double MIN_PRICE = 0.0;
 
-private static int totalProducts = 0;
+    private static int totalProducts = 0;
 
-// Thuộc tính
-private String id;
-private String name;
-private double price;
-private int stock;
+    private String id;
+    private String name;
+    private double price;
+    private int stock;
 
-public Product() {
-    this("P000", "Unknown Product", 1.0, 0);
-}
-
-public Product(String id, String name, double price) {
-    this(id, name, price, 0);
-}
-
-public Product(String id, String name, double price, int stock) {
-    setId(id);
-    setName(name);
-    setPrice(price);
-    setStock(stock);
-
-    totalProducts++;
-}
-
-// Static method
-public static int getTotalProducts() {
-    return totalProducts;
-}
-
-// Getter & Setter
-
-public String getId() {
-    return id;
-}
-
-public void setId(String id) {
-
-    if (id == null || id.trim().isEmpty()) {
-        throw new IllegalArgumentException(
-                "Product ID cannot be empty."
-        );
+    public Product() {
+        this("P000", "Unknown Product", 1.0, 0);
     }
 
-    this.id = id.trim();
-}
-
-public String getName() {
-    return name;
-}
-
-public void setName(String name) {
-
-    if (name == null || name.trim().length() < 2) {
-        throw new IllegalArgumentException(
-                "Product name must contain at least 2 characters."
-        );
+    public Product(String id, String name, double price) {
+        this(id, name, price, 0);
     }
 
-    this.name = name.trim();
-}
+    public Product(String id, String name, double price, int stock) {
+        setId(id);
+        setName(name);
 
-public double getPrice() {
-    return price;
-}
+        try {
+            setPrice(price);
+        } catch (InvalidPriceException e) {
+            throw new IllegalArgumentException(e.getMessage());
+        }
 
-public void setPrice(double price) {
-
-    if (price <= MIN_PRICE) {
-        throw new IllegalArgumentException(
-                "Product price must be greater than 0."
-        );
+        setStock(stock);
+        totalProducts++;
     }
 
-    this.price = price;
-}
-
-public int getStock() {
-    return stock;
-}
-
-public void setStock(int stock) {
-
-    if (stock < 0) {
-        throw new IllegalArgumentException(
-                "Product stock cannot be negative."
-        );
+    public static int getTotalProducts() {
+        return totalProducts;
     }
 
-    this.stock = stock;
-}
-
-public void increaseStock(int quantity) {
-
-    if (quantity <= 0) {
-        throw new IllegalArgumentException(
-                "Increase quantity must be greater than 0."
-        );
+    public String getId() {
+        return id;
     }
 
-    stock += quantity;
-}
+    public void setId(String id) {
+        if (id == null || id.trim().isEmpty()) {
+            throw new IllegalArgumentException("Product ID cannot be empty.");
+        }
 
-public void decreaseStock(int quantity) {
-
-    if (quantity <= 0) {
-        throw new IllegalArgumentException(
-                "Decrease quantity must be greater than 0."
-        );
+        this.id = id.trim();
     }
 
-    if (quantity > stock) {
-        throw new IllegalArgumentException(
-                "Not enough product in stock."
-        );
+    public String getName() {
+        return name;
     }
 
-    stock -= quantity;
-}
+    public void setName(String name) {
+        if (name == null || name.trim().length() < 2) {
+            throw new IllegalArgumentException(
+                    "Product name must contain at least 2 characters."
+            );
+        }
 
-@Override
-public String toString() {
-
-    return "Product{" +
-            "id='" + id + '\'' +
-            ", name='" + name + '\'' +
-            ", price=" + price +
-            ", stock=" + stock +
-            '}';
-}
-
-@Override
-public boolean equals(Object obj) {
-
-    if (this == obj) {
-        return true;
+        this.name = name.trim();
     }
 
-    if (!(obj instanceof Product)) {
-        return false;
+    public double getPrice() {
+        return price;
     }
 
-    Product product = (Product) obj;
+    public void setPrice(double price) throws InvalidPriceException {
 
-    return Objects.equals(id, product.id);
-}
+        if (price <= MIN_PRICE) {
+            throw new InvalidPriceException(
+                    "Product price must be greater than 0."
+            );
+        }
 
-@Override
-public int hashCode() {
-    return Objects.hash(id);
-}
+        this.price = price;
+    }
+
+    public int getStock() {
+        return stock;
+    }
+
+    public void setStock(int stock) {
+        if (stock < 0) {
+            throw new IllegalArgumentException(
+                    "Product stock cannot be negative."
+            );
+        }
+
+        this.stock = stock;
+    }
+
+    public void increaseStock(int quantity) {
+
+        if (quantity <= 0) {
+            throw new IllegalArgumentException(
+                    "Increase quantity must be greater than 0."
+            );
+        }
+
+        stock += quantity;
+    }
+
+    public void decreaseStock(int quantity) {
+
+        if (quantity <= 0) {
+            throw new IllegalArgumentException(
+                    "Decrease quantity must be greater than 0."
+            );
+        }
+
+        if (quantity > stock) {
+            throw new IllegalArgumentException(
+                    "Not enough product in stock."
+            );
+        }
+
+        stock -= quantity;
+    }
+
+    @Override
+    public String toString() {
+        return "Product{" +
+                "id='" + id + '\'' +
+                ", name='" + name + '\'' +
+                ", price=" + price +
+                ", stock=" + stock +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+
+        if (this == obj) {
+            return true;
+        }
+
+        if (!(obj instanceof Product)) {
+            return false;
+        }
+
+        Product product = (Product) obj;
+
+        return Objects.equals(id, product.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
 }
