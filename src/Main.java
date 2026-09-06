@@ -4,6 +4,8 @@ import model.Buyer;
 import model.OrderItem;
 import model.Product;
 import model.Seller;
+import strategy.CashPayment;
+import strategy.PaymentStrategy;
 
 public class Main {
 
@@ -163,6 +165,17 @@ public class Main {
         System.out.println("\n=================================");
         System.out.println(" Exception handling completed!");
         System.out.println("=================================");
+
+        // =========================
+// STRATEGY TEST
+// =========================
+
+System.out.println("\n--- PAYMENT STRATEGY TEST ---");
+
+PaymentStrategy payment = new CashPayment();
+
+payment.showPaymentInfo();
+payment.pay(500000);
     }
 
     // =========================
