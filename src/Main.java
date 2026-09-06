@@ -4,8 +4,8 @@ import model.Buyer;
 import model.OrderItem;
 import model.Product;
 import model.Seller;
-import strategy.CashPayment;
-import strategy.PaymentStrategy;
+import model.Order;
+import strategy.BankTransferPayment;
 
 public class Main {
 
@@ -82,7 +82,31 @@ public class Main {
         if (product2 != null) {
             manager1.addProduct(product2);
         }
+// =========================
+// ORDER + STRATEGY TEST
+// =========================
 
+System.out.println("\n--- ORDER PAYMENT TEST ---");
+
+Order order = new Order(
+        "O001",
+        buyer
+);
+
+order.addItem(product1, 2);
+order.addItem(product2, 1);
+
+// Select payment strategy
+order.setPaymentStrategy(
+        new BankTransferPayment("123456789")
+);
+
+System.out.println("Order total: "
+        + order.calculateTotal());
+
+order.showPaymentInfo();
+
+order.pay();
         // =========================
         // TEST INVALID PRICE
         // =========================

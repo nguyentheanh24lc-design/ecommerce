@@ -1,5 +1,7 @@
 package model;
 
+import strategy.PaymentStrategy;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -7,261 +9,339 @@ import java.util.List;
 import java.util.Objects;
 
 public class Order implements Identifiable {
-public static final String STATUS_PENDING = "PENDING";
-public static final String STATUS_CONFIRMED = "CONFIRMED";
-public static final String STATUS_COMPLETED = "COMPLETED";
-public static final String STATUS_CANCELLED = "CANCELLED";
 
-private String id;
-private Buyer buyer;
-private LocalDateTime orderDate;
-private String status;
+    public static final String STATUS_PENDING = "PENDING";
+    public static final String STATUS_CONFIRMED = "CONFIRMED";
+    public static final String STATUS_COMPLETED = "COMPLETED";
+    public static final String STATUS_CANCELLED = "CANCELLED";
 
-private final List<OrderItem> items;
+    private String id;
+    private Buyer buyer;
+    private LocalDateTime orderDate;
+    private String status;
+    private PaymentStrategy paymentStrategy;
 
-public Order() {
-    this(
-            "O000",
-            new Buyer(),
-            LocalDateTime.now(),
-            STATUS_PENDING
-    );
-}
+    private final List<OrderItem> items;
 
-public Order(String id, Buyer buyer) {
-    this(
-            id,
-            buyer,
-            LocalDateTime.now(),
-            STATUS_PENDING
-    );
-}
+    // =========================
+    // CONSTRUCTORS
+    // =========================
 
-public Order(
-        String id,
-        Buyer buyer,
-        LocalDateTime orderDate,
-        String status) {
-
-    setId(id);
-    setBuyer(buyer);
-    setOrderDate(orderDate);
-    setStatus(status);
-
-    this.items = new ArrayList<>();
-}
-
-
-public String getId() {
-    return id;
-}
-
-public void setId(String id) {
-
-    if (id == null || id.trim().isEmpty()) {
-        throw new IllegalArgumentException(
-                "Order ID cannot be empty."
+    public Order() {
+        this(
+                "O000",
+                new Buyer(),
+                LocalDateTime.now(),
+                STATUS_PENDING
         );
     }
 
-    this.id = id.trim();
-}
-
-public Buyer getBuyer() {
-    return buyer;
-}
-
-public void setBuyer(Buyer buyer) {
-
-    if (buyer == null) {
-        throw new IllegalArgumentException(
-                "Buyer cannot be null."
+    public Order(String id, Buyer buyer) {
+        this(
+                id,
+                buyer,
+                LocalDateTime.now(),
+                STATUS_PENDING
         );
     }
 
-    this.buyer = buyer;
-}
+    public Order(
+            String id,
+            Buyer buyer,
+            LocalDateTime orderDate,
+            String status) {
 
-public LocalDateTime getOrderDate() {
-    return orderDate;
-}
+        setId(id);
+        setBuyer(buyer);
+        setOrderDate(orderDate);
+        setStatus(status);
 
-public void setOrderDate(LocalDateTime orderDate) {
+        this.items = new ArrayList<>();
+    }
 
-    if (orderDate == null) {
-        throw new IllegalArgumentException(
-                "Order date cannot be null."
+    // =========================
+    // GETTER / SETTER
+    // =========================
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+
+        if (id == null || id.trim().isEmpty()) {
+            throw new IllegalArgumentException(
+                    "Order ID cannot be empty."
+            );
+        }
+
+        this.id = id.trim();
+    }
+
+    public Buyer getBuyer() {
+        return buyer;
+    }
+
+    public void setBuyer(Buyer buyer) {
+
+        if (buyer == null) {
+            throw new IllegalArgumentException(
+                    "Buyer cannot be null."
+            );
+        }
+
+        this.buyer = buyer;
+    }
+
+    public LocalDateTime getOrderDate() {
+        return orderDate;
+    }
+
+    public void setOrderDate(LocalDateTime orderDate) {
+
+        if (orderDate == null) {
+            throw new IllegalArgumentException(
+                    "Order date cannot be null."
+            );
+        }
+
+        this.orderDate = orderDate;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+
+        if (status == null || status.trim().isEmpty()) {
+            throw new IllegalArgumentException(
+                    "Order status cannot be empty."
+            );
+        }
+
+        String normalizedStatus =
+                status.trim().toUpperCase();
+
+        if (!normalizedStatus.equals(STATUS_PENDING)
+                && !normalizedStatus.equals(STATUS_CONFIRMED)
+                && !normalizedStatus.equals(STATUS_COMPLETED)
+                && !normalizedStatus.equals(STATUS_CANCELLED)) {
+
+            throw new IllegalArgumentException(
+                    "Invalid order status."
+            );
+        }
+
+        this.status = normalizedStatus;
+    }
+
+    // =========================
+    // PAYMENT STRATEGY
+    // =========================
+
+    public PaymentStrategy getPaymentStrategy() {
+        return paymentStrategy;
+    }
+
+    public void setPaymentStrategy(
+            PaymentStrategy paymentStrategy) {
+
+        if (paymentStrategy == null) {
+            throw new IllegalArgumentException(
+                    "Payment strategy cannot be null."
+            );
+        }
+
+        this.paymentStrategy = paymentStrategy;
+    }
+
+    // =========================
+    // ORDER ITEMS
+    // =========================
+
+    public List<OrderItem> getItems() {
+        return Collections.unmodifiableList(items);
+    }
+
+    public void addItem(Product product, int quantity) {
+
+        if (product == null) {
+            throw new IllegalArgumentException(
+                    "Product cannot be null."
+            );
+        }
+
+        if (quantity <= 0) {
+            throw new IllegalArgumentException(
+                    "Quantity must be greater than 0."
+            );
+        }
+
+        for (OrderItem item : items) {
+
+            if (item.getProduct().equals(product)) {
+
+                item.increaseQuantity(quantity);
+                return;
+            }
+        }
+
+        OrderItem newItem =
+                new OrderItem(product, quantity);
+
+        items.add(newItem);
+    }
+
+    public boolean removeItem(String productId) {
+
+        if (productId == null
+                || productId.trim().isEmpty()) {
+
+            return false;
+        }
+
+        return items.removeIf(
+                item -> item.getProduct()
+                        .getId()
+                        .equalsIgnoreCase(productId.trim())
         );
     }
 
-    this.orderDate = orderDate;
-}
+    // =========================
+    // CALCULATION
+    // =========================
 
-public String getStatus() {
-    return status;
-}
+    public double calculateTotal() {
 
-public void setStatus(String status) {
+        double total = 0;
 
-    if (status == null || status.trim().isEmpty()) {
-        throw new IllegalArgumentException(
-                "Order status cannot be empty."
-        );
+        for (OrderItem item : items) {
+            total += item.calculateSubtotal();
+        }
+
+        return total;
     }
 
-    String normalizedStatus = status.trim().toUpperCase();
+    public int getTotalQuantity() {
 
-    if (!normalizedStatus.equals(STATUS_PENDING)
-            && !normalizedStatus.equals(STATUS_CONFIRMED)
-            && !normalizedStatus.equals(STATUS_COMPLETED)
-            && !normalizedStatus.equals(STATUS_CANCELLED)) {
+        int totalQuantity = 0;
 
-        throw new IllegalArgumentException(
-                "Invalid order status."
-        );
+        for (OrderItem item : items) {
+            totalQuantity += item.getQuantity();
+        }
+
+        return totalQuantity;
     }
 
-    this.status = normalizedStatus;
-}
+    // =========================
+    // PAYMENT
+    // =========================
 
-public List<OrderItem> getItems() {
-    return Collections.unmodifiableList(items);
-}
+    public void pay() {
 
-public void addItem(Product product, int quantity) {
+        if (paymentStrategy == null) {
+            throw new IllegalStateException(
+                    "Payment strategy has not been selected."
+            );
+        }
 
-    if (product == null) {
-        throw new IllegalArgumentException(
-                "Product cannot be null."
-        );
+        if (items.isEmpty()) {
+            throw new IllegalStateException(
+                    "Cannot pay for an empty order."
+            );
+        }
+
+        paymentStrategy.pay(calculateTotal());
     }
 
-    if (quantity <= 0) {
-        throw new IllegalArgumentException(
-                "Quantity must be greater than 0."
-        );
-    }
+    public void showPaymentInfo() {
 
-    for (OrderItem item : items) {
-
-        if (item.getProduct().equals(product)) {
-
-            item.increaseQuantity(quantity);
+        if (paymentStrategy == null) {
+            System.out.println(
+                    "Payment method: Not selected"
+            );
             return;
         }
+
+        paymentStrategy.showPaymentInfo();
     }
 
-    OrderItem newItem = new OrderItem(
-            product,
-            quantity
-    );
+    // =========================
+    // ORDER STATUS
+    // =========================
 
-    items.add(newItem);
-}
+    public void confirmOrder() {
 
-public boolean removeItem(String productId) {
+        if (!status.equals(STATUS_PENDING)) {
 
-    if (productId == null ||
-            productId.trim().isEmpty()) {
+            throw new IllegalStateException(
+                    "Only pending orders can be confirmed."
+            );
+        }
 
-        return false;
+        status = STATUS_CONFIRMED;
     }
 
-    return items.removeIf(item ->
-            item.getProduct()
-                    .getId()
-                    .equalsIgnoreCase(
-                            productId.trim()
-                    )
-    );
-}
+    public void completeOrder() {
 
-public double calculateTotal() {
+        if (!status.equals(STATUS_CONFIRMED)) {
 
-    double total = 0;
+            throw new IllegalStateException(
+                    "Only confirmed orders can be completed."
+            );
+        }
 
-    for (OrderItem item : items) {
-        total += item.calculateSubtotal();
+        status = STATUS_COMPLETED;
     }
 
-    return total;
-}
+    public void cancelOrder() {
 
-public int getTotalQuantity() {
+        if (status.equals(STATUS_COMPLETED)) {
 
-    int totalQuantity = 0;
+            throw new IllegalStateException(
+                    "Completed orders cannot be cancelled."
+            );
+        }
 
-    for (OrderItem item : items) {
-        totalQuantity += item.getQuantity();
+        status = STATUS_CANCELLED;
     }
 
-    return totalQuantity;
-}
+    // =========================
+    // OBJECT METHODS
+    // =========================
 
-public void confirmOrder() {
+    @Override
+    public String toString() {
 
-    if (!status.equals(STATUS_PENDING)) {
-        throw new IllegalStateException(
-                "Only pending orders can be confirmed."
-        );
+        return "Order{" +
+                "id='" + id + '\'' +
+                ", buyer='" + buyer.getName() + '\'' +
+                ", orderDate=" + orderDate +
+                ", status='" + status + '\'' +
+                ", totalQuantity=" + getTotalQuantity() +
+                ", total=" + calculateTotal() +
+                '}';
     }
 
-    status = STATUS_CONFIRMED;
-}
+    @Override
+    public boolean equals(Object obj) {
 
-public void completeOrder() {
+        if (this == obj) {
+            return true;
+        }
 
-    if (!status.equals(STATUS_CONFIRMED)) {
-        throw new IllegalStateException(
-                "Only confirmed orders can be completed."
-        );
+        if (!(obj instanceof Order)) {
+            return false;
+        }
+
+        Order order = (Order) obj;
+
+        return Objects.equals(id, order.id);
     }
 
-    status = STATUS_COMPLETED;
-}
-
-public void cancelOrder() {
-
-    if (status.equals(STATUS_COMPLETED)) {
-        throw new IllegalStateException(
-                "Completed orders cannot be cancelled."
-        );
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
-
-    status = STATUS_CANCELLED;
-}
-
-@Override
-public String toString() {
-
-    return "Order{" +
-            "id='" + id + '\'' +
-            ", buyer='" + buyer.getName() + '\'' +
-            ", orderDate=" + orderDate +
-            ", status='" + status + '\'' +
-            ", totalQuantity=" + getTotalQuantity() +
-            ", total=" + calculateTotal() +
-            '}';
-}
-
-@Override
-public boolean equals(Object obj) {
-
-    if (this == obj) {
-        return true;
-    }
-
-    if (!(obj instanceof Order)) {
-        return false;
-    }
-
-    Order order = (Order) obj;
-
-    return Objects.equals(id, order.id);
-}
-
-@Override
-public int hashCode() {
-    return Objects.hash(id);
-}
 }
