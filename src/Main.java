@@ -1,266 +1,93 @@
+import manager.MarketplaceManager;
 import model.Admin;
 import model.Buyer;
-import model.Identifiable;
-import model.Order;
-import model.OrderItem;
 import model.Product;
 import model.Seller;
-import model.User;
-import manager.MarketplaceManager;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class Main {
-public static void main(String[] args) {
 
-    System.out.println("=================================");
-    System.out.println(" E-COMMERCE MANAGEMENT SYSTEM ");
-    System.out.println("=================================");
+    public static void main(String[] args) {
 
-    List<User> users = new ArrayList<>();
+        System.out.println("=================================");
+        System.out.println(" E-COMMERCE MANAGEMENT SYSTEM ");
+        System.out.println("=================================");
 
-    users.add(new Buyer(
-            "B001",
-            "Nguyen Van A",
-            "vana@gmail.com",
-            "Ha Noi"
-    ));
+        // Get Singleton instance
+        MarketplaceManager manager1 = MarketplaceManager.getInstance();
+        MarketplaceManager manager2 = MarketplaceManager.getInstance();
 
-    Seller seller = new Seller(
-            "S001",
-            "Tran Van B",
-            "seller@gmail.com",
-            "Tech Store"
-    );
+        // Check Singleton
+        System.out.println("\n--- SINGLETON TEST ---");
+        System.out.println("manager1 == manager2: " + (manager1 == manager2));
 
-    users.add(seller);
-
-    users.add(new Admin(
-            "A001",
-            "Le Van C",
-            "admin@gmail.com",
-            "HIGH"
-    ));
-
-    System.out.println("\n--- USER LIST ---");
-
-    for (User user : users) {
-        user.displayRole();
-        System.out.println(user);
-    }
-
-    Product product1 = new Product(
-            "P001",
-            "Laptop Dell",
-            25000000,
-            10
-    );
-
-    Product product2 = new Product(
-            "P002",
-            "Mechanical Keyboard",
-            1500000,
-            20
-    );
-
-    Product product3 = new Product(
-            "P003",
-            "Gaming Mouse",
-            800000,
-            30
-    );
-
-    seller.addProduct(product1);
-    seller.addProduct(product2);
-    seller.addProduct(product3);
-
-    System.out.println("\n--- SELLER PRODUCT LIST ---");
-
-    System.out.println(
-            "Shop: " + seller.getShopName()
-    );
-
-    System.out.println(
-            "Total products: "
-                    + seller.getProductCount()
-    );
-
-    for (Product product : seller.getProducts()) {
-        System.out.println(product);
-    }
-
-    System.out.println("\n--- FIND PRODUCT ---");
-
-    Product foundProduct =
-            seller.findProductById("P002");
-
-    if (foundProduct != null) {
-
-        System.out.println(
-                "Product found: "
-                        + foundProduct
+        // Create users
+        Buyer buyer = new Buyer(
+                "B001",
+                "Nguyen Van A",
+                "buyer@gmail.com",
+                "Ha Noi"
         );
 
-    } else {
-
-        System.out.println(
-                "Product not found."
-        );
-    }
-
-    System.out.println("\n--- ORDER ITEM TEST ---");
-
-    OrderItem orderItem = new OrderItem(
-            product1,
-            2
-    );
-
-    System.out.println(orderItem);
-
-    System.out.println(
-            "Subtotal: "
-                    + orderItem.calculateSubtotal()
-    );
-
-    orderItem.increaseQuantity(1);
-
-    System.out.println(
-            "After increasing quantity: "
-                    + orderItem
-    );
-
-    orderItem.decreaseQuantity(1);
-
-    System.out.println(
-            "After decreasing quantity: "
-                    + orderItem
-    );
-
-    System.out.println("\n--- ORDER TEST ---");
-
-    Buyer orderBuyer = new Buyer(
-            "B002",
-            "Pham Van D",
-            "phamvand@gmail.com",
-            "Ho Chi Minh City"
-    );
-
-    Order order = new Order(
-            "O001",
-            orderBuyer
-    );
-
-    order.addItem(product1, 1);
-    order.addItem(product2, 2);
-    order.addItem(product3, 3);
-
-    System.out.println(order);
-
-    System.out.println("\n--- ORDER ITEMS ---");
-
-    for (OrderItem item : order.getItems()) {
-        System.out.println(item);
-    }
-
-    System.out.println(
-            "\nTotal quantity: "
-                    + order.getTotalQuantity()
-    );
-
-    System.out.println(
-            "Order total: "
-                    + order.calculateTotal()
-    );
-
-    System.out.println(
-            "\nCurrent status: "
-                    + order.getStatus()
-    );
-
-    order.confirmOrder();
-
-    System.out.println(
-            "After confirm: "
-                    + order.getStatus()
-    );
-
-    order.completeOrder();
-
-    System.out.println(
-            "After complete: "
-                    + order.getStatus()
-    );
-
-    System.out.println("\n--- INTERFACE TEST ---");
-
-    Identifiable identifiableProduct = product1;
-
-    System.out.println(
-        "Product has ID P001: "
-                + identifiableProduct.hasId("P001")
-    );
-
-    Identifiable identifiableOrder = order;
-
-    System.out.println(
-        "Order has ID O001: "
-                + identifiableOrder.hasId("O001")
-    );
-
-    System.out.println("\n--- MARKETPLACE MANAGER TEST ---");
-
-    MarketplaceManager manager =
-            new MarketplaceManager();
-    Buyer buyer = new Buyer(
-        "B001",
-        "Nguyen Van A",
-        "vana@gmail.com",
-        "Ha Noi"
+        Seller seller = new Seller(
+                "S001",
+                "Tran Van B",
+                "seller@gmail.com",
+                "B Shop"
         );
 
-    manager.addUser(buyer);
-    manager.addUser(seller);
+        Admin admin = new Admin(
+                "A001",
+                "Le Van C",
+                "admin@gmail.com",
+                "HIGH"
+        );
 
-    manager.addProduct(product1);
-    manager.addProduct(product2);
-    manager.addProduct(product3);
+        // Add users
+        manager1.addUser(buyer);
+        manager1.addUser(seller);
+        manager1.addUser(admin);
 
-    manager.addOrder(order);
+        // Create products
+        Product product1 = new Product(
+                "P001",
+                "Laptop",
+                15000000,
+                10
+        );
 
-    System.out.println(
-            "Number of users: "
-                    + manager.getUserCount()
-    );
+        Product product2 = new Product(
+                "P002",
+                "Mouse",
+                500000,
+                20
+        );
 
-    System.out.println(
-            "Number of products: "
-                    + manager.getProductCount()
-    );
+        // Add products
+        manager1.addProduct(product1);
+        manager1.addProduct(product2);
 
-    System.out.println(
-            "Number of orders: "
-                    + manager.getOrderCount()
-    );
+        // Display data through manager2
+        System.out.println("\n--- DATA FROM manager2 ---");
+        System.out.println("Users: " + manager2.getUserCount());
+        System.out.println("Products: " + manager2.getProductCount());
+        System.out.println("Orders: " + manager2.getOrderCount());
 
-    System.out.println("\nFind product:");
+        System.out.println("\n--- USERS ---");
 
-    Product managerProduct =
-            manager.findProductById("P001");
+        for (var user : manager2.getUsers()) {
+            user.displayRole();
+            System.out.println(user);
+            System.out.println("------------------");
+        }
 
-    if (managerProduct != null) {
-        System.out.println(managerProduct);
+        System.out.println("\n--- PRODUCTS ---");
+
+        for (Product product : manager2.getProducts()) {
+            System.out.println(product);
+        }
+
+        System.out.println("\n=================================");
+        System.out.println(" Singleton test completed!");
+        System.out.println("=================================");
     }
-
-    System.out.println("\nFind order:");
-
-    Order managerOrder =
-            manager.findOrderById("O001");
-
-    if (managerOrder != null) {
-        System.out.println(managerOrder);
-    }
-
-    System.out.println("\n" + manager);
-}
 }

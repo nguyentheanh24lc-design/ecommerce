@@ -9,191 +9,183 @@ import java.util.Collections;
 import java.util.List;
 
 public class MarketplaceManager {
-private final List<User> users;
-private final List<Product> products;
-private final List<Order> orders;
 
-// Constructor
-public MarketplaceManager() {
-    users = new ArrayList<>();
-    products = new ArrayList<>();
-    orders = new ArrayList<>();
-}
-public void addUser(User user) {
+    // Singleton instance
+    private static MarketplaceManager instance;
 
-    if (user == null) {
-        throw new IllegalArgumentException(
-                "User cannot be null."
-        );
+    private final List<User> users;
+    private final List<Product> products;
+    private final List<Order> orders;
+
+    // Private constructor
+    private MarketplaceManager() {
+        users = new ArrayList<>();
+        products = new ArrayList<>();
+        orders = new ArrayList<>();
     }
 
-    if (findUserById(user.getId()) != null) {
-        throw new IllegalArgumentException(
-                "User ID already exists."
-        );
+    // Get Singleton instance
+    public static MarketplaceManager getInstance() {
+        if (instance == null) {
+            instance = new MarketplaceManager();
+        }
+        return instance;
     }
 
-    users.add(user);
-}
+    // =========================
+    // USER MANAGEMENT
+    // =========================
 
-public boolean removeUser(String userId) {
+    public void addUser(User user) {
+        if (user == null) {
+            throw new IllegalArgumentException("User cannot be null.");
+        }
 
-    User user = findUserById(userId);
+        if (findUserById(user.getId()) != null) {
+            throw new IllegalArgumentException("User ID already exists.");
+        }
 
-    if (user == null) {
-        return false;
+        users.add(user);
     }
 
-    return users.remove(user);
-}
+    public boolean removeUser(String userId) {
+        User user = findUserById(userId);
 
-public User findUserById(String userId) {
+        if (user == null) {
+            return false;
+        }
 
-    if (userId == null ||
-            userId.trim().isEmpty()) {
+        return users.remove(user);
+    }
+
+    public User findUserById(String userId) {
+        if (userId == null || userId.trim().isEmpty()) {
+            return null;
+        }
+
+        for (User user : users) {
+            if (user.getId().equalsIgnoreCase(userId.trim())) {
+                return user;
+            }
+        }
 
         return null;
     }
 
-    for (User user : users) {
+    public List<User> getUsers() {
+        return Collections.unmodifiableList(users);
+    }
 
-        if (user.getId().equalsIgnoreCase(
-                userId.trim())) {
+    // =========================
+    // PRODUCT MANAGEMENT
+    // =========================
 
-            return user;
+    public void addProduct(Product product) {
+        if (product == null) {
+            throw new IllegalArgumentException("Product cannot be null.");
         }
+
+        if (findProductById(product.getId()) != null) {
+            throw new IllegalArgumentException("Product ID already exists.");
+        }
+
+        products.add(product);
     }
 
-    return null;
-}
+    public boolean removeProduct(String productId) {
+        Product product = findProductById(productId);
 
-public List<User> getUsers() {
-    return Collections.unmodifiableList(users);
-}
+        if (product == null) {
+            return false;
+        }
 
-public void addProduct(Product product) {
-
-    if (product == null) {
-        throw new IllegalArgumentException(
-                "Product cannot be null."
-        );
+        return products.remove(product);
     }
 
-    if (findProductById(product.getId()) != null) {
-        throw new IllegalArgumentException(
-                "Product ID already exists."
-        );
-    }
+    public Product findProductById(String productId) {
+        if (productId == null || productId.trim().isEmpty()) {
+            return null;
+        }
 
-    products.add(product);
-}
-
-public boolean removeProduct(String productId) {
-
-    Product product = findProductById(productId);
-
-    if (product == null) {
-        return false;
-    }
-
-    return products.remove(product);
-}
-
-public Product findProductById(String productId) {
-
-    if (productId == null ||
-            productId.trim().isEmpty()) {
+        for (Product product : products) {
+            if (product.getId().equalsIgnoreCase(productId.trim())) {
+                return product;
+            }
+        }
 
         return null;
     }
 
-    for (Product product : products) {
+    public List<Product> getProducts() {
+        return Collections.unmodifiableList(products);
+    }
 
-        if (product.getId().equalsIgnoreCase(
-                productId.trim())) {
+    // =========================
+    // ORDER MANAGEMENT
+    // =========================
 
-            return product;
+    public void addOrder(Order order) {
+        if (order == null) {
+            throw new IllegalArgumentException("Order cannot be null.");
         }
+
+        if (findOrderById(order.getId()) != null) {
+            throw new IllegalArgumentException("Order ID already exists.");
+        }
+
+        orders.add(order);
     }
 
-    return null;
-}
+    public boolean removeOrder(String orderId) {
+        Order order = findOrderById(orderId);
 
-public List<Product> getProducts() {
-    return Collections.unmodifiableList(products);
-}
+        if (order == null) {
+            return false;
+        }
 
-public void addOrder(Order order) {
-
-    if (order == null) {
-        throw new IllegalArgumentException(
-                "Order cannot be null."
-        );
+        return orders.remove(order);
     }
 
-    if (findOrderById(order.getId()) != null) {
-        throw new IllegalArgumentException(
-                "Order ID already exists."
-        );
-    }
+    public Order findOrderById(String orderId) {
+        if (orderId == null || orderId.trim().isEmpty()) {
+            return null;
+        }
 
-    orders.add(order);
-}
-
-public boolean removeOrder(String orderId) {
-
-    Order order = findOrderById(orderId);
-
-    if (order == null) {
-        return false;
-    }
-
-    return orders.remove(order);
-}
-
-public Order findOrderById(String orderId) {
-
-    if (orderId == null ||
-            orderId.trim().isEmpty()) {
+        for (Order order : orders) {
+            if (order.getId().equalsIgnoreCase(orderId.trim())) {
+                return order;
+            }
+        }
 
         return null;
     }
 
-    for (Order order : orders) {
-
-        if (order.getId().equalsIgnoreCase(
-                orderId.trim())) {
-
-            return order;
-        }
+    public List<Order> getOrders() {
+        return Collections.unmodifiableList(orders);
     }
 
-    return null;
-}
+    // =========================
+    // STATISTICS
+    // =========================
 
-public List<Order> getOrders() {
-    return Collections.unmodifiableList(orders);
-}
+    public int getUserCount() {
+        return users.size();
+    }
 
-public int getUserCount() {
-    return users.size();
-}
+    public int getProductCount() {
+        return products.size();
+    }
 
-public int getProductCount() {
-    return products.size();
-}
+    public int getOrderCount() {
+        return orders.size();
+    }
 
-public int getOrderCount() {
-    return orders.size();
-}
-
-@Override
-public String toString() {
-
-    return "MarketplaceManager{" +
-            "users=" + users.size() +
-            ", products=" + products.size() +
-            ", orders=" + orders.size() +
-            '}';
-}
-}
+    @Override
+    public String toString() {
+        return "MarketplaceManager{" +
+                "users=" + users.size() +
+                ", products=" + products.size() +
+                ", orders=" + orders.size() +
+                '}';
+    }
+};
