@@ -1,0 +1,199 @@
+package manager;
+
+import model.Order;
+import model.Product;
+import model.User;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+public class MarketplaceManager {
+private final List<User> users;
+private final List<Product> products;
+private final List<Order> orders;
+
+// Constructor
+public MarketplaceManager() {
+    users = new ArrayList<>();
+    products = new ArrayList<>();
+    orders = new ArrayList<>();
+}
+public void addUser(User user) {
+
+    if (user == null) {
+        throw new IllegalArgumentException(
+                "User cannot be null."
+        );
+    }
+
+    if (findUserById(user.getId()) != null) {
+        throw new IllegalArgumentException(
+                "User ID already exists."
+        );
+    }
+
+    users.add(user);
+}
+
+public boolean removeUser(String userId) {
+
+    User user = findUserById(userId);
+
+    if (user == null) {
+        return false;
+    }
+
+    return users.remove(user);
+}
+
+public User findUserById(String userId) {
+
+    if (userId == null ||
+            userId.trim().isEmpty()) {
+
+        return null;
+    }
+
+    for (User user : users) {
+
+        if (user.getId().equalsIgnoreCase(
+                userId.trim())) {
+
+            return user;
+        }
+    }
+
+    return null;
+}
+
+public List<User> getUsers() {
+    return Collections.unmodifiableList(users);
+}
+
+public void addProduct(Product product) {
+
+    if (product == null) {
+        throw new IllegalArgumentException(
+                "Product cannot be null."
+        );
+    }
+
+    if (findProductById(product.getId()) != null) {
+        throw new IllegalArgumentException(
+                "Product ID already exists."
+        );
+    }
+
+    products.add(product);
+}
+
+public boolean removeProduct(String productId) {
+
+    Product product = findProductById(productId);
+
+    if (product == null) {
+        return false;
+    }
+
+    return products.remove(product);
+}
+
+public Product findProductById(String productId) {
+
+    if (productId == null ||
+            productId.trim().isEmpty()) {
+
+        return null;
+    }
+
+    for (Product product : products) {
+
+        if (product.getId().equalsIgnoreCase(
+                productId.trim())) {
+
+            return product;
+        }
+    }
+
+    return null;
+}
+
+public List<Product> getProducts() {
+    return Collections.unmodifiableList(products);
+}
+
+public void addOrder(Order order) {
+
+    if (order == null) {
+        throw new IllegalArgumentException(
+                "Order cannot be null."
+        );
+    }
+
+    if (findOrderById(order.getId()) != null) {
+        throw new IllegalArgumentException(
+                "Order ID already exists."
+        );
+    }
+
+    orders.add(order);
+}
+
+public boolean removeOrder(String orderId) {
+
+    Order order = findOrderById(orderId);
+
+    if (order == null) {
+        return false;
+    }
+
+    return orders.remove(order);
+}
+
+public Order findOrderById(String orderId) {
+
+    if (orderId == null ||
+            orderId.trim().isEmpty()) {
+
+        return null;
+    }
+
+    for (Order order : orders) {
+
+        if (order.getId().equalsIgnoreCase(
+                orderId.trim())) {
+
+            return order;
+        }
+    }
+
+    return null;
+}
+
+public List<Order> getOrders() {
+    return Collections.unmodifiableList(orders);
+}
+
+public int getUserCount() {
+    return users.size();
+}
+
+public int getProductCount() {
+    return products.size();
+}
+
+public int getOrderCount() {
+    return orders.size();
+}
+
+@Override
+public String toString() {
+
+    return "MarketplaceManager{" +
+            "users=" + users.size() +
+            ", products=" + products.size() +
+            ", orders=" + orders.size() +
+            '}';
+}
+}

@@ -6,6 +6,7 @@ import model.OrderItem;
 import model.Product;
 import model.Seller;
 import model.User;
+import manager.MarketplaceManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -206,5 +207,60 @@ public static void main(String[] args) {
         "Order has ID O001: "
                 + identifiableOrder.hasId("O001")
     );
+
+    System.out.println("\n--- MARKETPLACE MANAGER TEST ---");
+
+    MarketplaceManager manager =
+            new MarketplaceManager();
+    Buyer buyer = new Buyer(
+        "B001",
+        "Nguyen Van A",
+        "vana@gmail.com",
+        "Ha Noi"
+        );
+
+    manager.addUser(buyer);
+    manager.addUser(seller);
+
+    manager.addProduct(product1);
+    manager.addProduct(product2);
+    manager.addProduct(product3);
+
+    manager.addOrder(order);
+
+    System.out.println(
+            "Number of users: "
+                    + manager.getUserCount()
+    );
+
+    System.out.println(
+            "Number of products: "
+                    + manager.getProductCount()
+    );
+
+    System.out.println(
+            "Number of orders: "
+                    + manager.getOrderCount()
+    );
+
+    System.out.println("\nFind product:");
+
+    Product managerProduct =
+            manager.findProductById("P001");
+
+    if (managerProduct != null) {
+        System.out.println(managerProduct);
+    }
+
+    System.out.println("\nFind order:");
+
+    Order managerOrder =
+            manager.findOrderById("O001");
+
+    if (managerOrder != null) {
+        System.out.println(managerOrder);
+    }
+
+    System.out.println("\n" + manager);
 }
 }
