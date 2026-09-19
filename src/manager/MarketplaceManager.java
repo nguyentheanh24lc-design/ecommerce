@@ -1,5 +1,6 @@
 package manager;
 
+import factory.ProductFactory;
 import model.Order;
 import model.Product;
 import model.User;
@@ -90,6 +91,41 @@ public class MarketplaceManager {
         }
 
         products.add(product);
+    }
+
+    public Product createProduct(
+            String type,
+            String id,
+            String name,
+            double price,
+            int stock) {
+
+        Product product = ProductFactory.createProduct(
+                type,
+                id,
+                name,
+                price,
+                stock
+        );
+
+        addProduct(product);
+
+        return product;
+    }
+
+    public Product createProduct(
+            String type,
+            String id,
+            String name,
+            double price) {
+
+        return createProduct(
+                type,
+                id,
+                name,
+                price,
+                0
+        );
     }
 
     public boolean removeProduct(String productId) {

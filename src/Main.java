@@ -1,3 +1,4 @@
+import factory.ProductFactory;
 import manager.MarketplaceManager;
 import model.Admin;
 import model.Buyer;
@@ -19,10 +20,14 @@ public class Main {
         // SINGLETON
         // =========================
 
-        MarketplaceManager manager1 = MarketplaceManager.getInstance();
-        MarketplaceManager manager2 = MarketplaceManager.getInstance();
+        MarketplaceManager manager1 =
+                MarketplaceManager.getInstance();
+
+        MarketplaceManager manager2 =
+                MarketplaceManager.getInstance();
 
         System.out.println("\n--- SINGLETON TEST ---");
+
         System.out.println(
                 "manager1 == manager2: "
                         + (manager1 == manager2)
@@ -61,66 +66,83 @@ public class Main {
         // CREATE PRODUCTS
         // =========================
 
-        Product product1 = createProduct(
+        System.out.println("\n--- FACTORY TEST ---");
+
+        Product product1 = manager1.createProduct(
+                ProductFactory.TYPE_BASIC,
                 "P001",
                 "Laptop",
                 15000000,
                 10
         );
 
-        Product product2 = createProduct(
+        Product product2 = manager1.createProduct(
+                ProductFactory.TYPE_PREMIUM,
                 "P002",
                 "Mouse",
                 500000,
                 20
         );
 
-        if (product1 != null) {
-            manager1.addProduct(product1);
-        }
+        System.out.println(product1);
+        System.out.println(product2);
 
-        if (product2 != null) {
-            manager1.addProduct(product2);
-        }
-// =========================
-// ORDER + STRATEGY TEST
-// =========================
+        // =========================
+        // ORDER + STRATEGY TEST
+        // =========================
 
-System.out.println("\n--- ORDER PAYMENT TEST ---");
+        System.out.println("\n--- ORDER PAYMENT TEST ---");
 
-Order order = new Order(
-        "O001",
-        buyer
-);
+        Order order = new Order(
+                "O001",
+                buyer
+        );
 
-order.addItem(product1, 2);
-order.addItem(product2, 1);
+        order.addItem(product1, 2);
+        order.addItem(product2, 1);
 
-// Select payment strategy
-order.setPaymentStrategy(
-        new BankTransferPayment("123456789")
-);
+        // Select payment strategy
+        order.setPaymentStrategy(
+                new BankTransferPayment("123456789")
+        );
 
-System.out.println("Order total: "
-        + order.calculateTotal());
+        System.out.println(
+                "Order total: "
+                        + order.calculateTotal()
+        );
 
-order.showPaymentInfo();
+        order.showPaymentInfo();
 
-order.pay();
+        order.pay();
+
+        manager1.addOrder(order);
+
         // =========================
         // TEST INVALID PRICE
         // =========================
 
         System.out.println("\n--- INVALID PRICE TEST ---");
 
-        Product invalidPriceProduct = createProduct(
-                "P999",
-                "Invalid Product",
-                -100,
-                10
-        );
+        try {
 
-        if (invalidPriceProduct == null) {
+            Product invalidPriceProduct =
+                    manager1.createProduct(
+                            ProductFactory.TYPE_BASIC,
+                            "P999",
+                            "Invalid Product",
+                            -100,
+                            10
+                    );
+
+            System.out.println(invalidPriceProduct);
+
+        } catch (IllegalArgumentException e) {
+
+            System.out.println(
+                    "Product creation error: "
+                            + e.getMessage()
+            );
+
             System.out.println(
                     "Invalid product was rejected successfully."
             );
@@ -132,22 +154,19 @@ order.pay();
 
         System.out.println("\n--- INVALID QUANTITY TEST ---");
 
-        if (product1 != null) {
+        try {
 
-            try {
+            OrderItem invalidItem =
+                    new OrderItem(product1, 0);
 
-                OrderItem invalidItem =
-                        new OrderItem(product1, 0);
+            System.out.println(invalidItem);
 
-                System.out.println(invalidItem);
+        } catch (IllegalArgumentException e) {
 
-            } catch (IllegalArgumentException e) {
-
-                System.out.println(
-                        "Quantity error handled: "
-                                + e.getMessage()
-                );
-            }
+            System.out.println(
+                    "Quantity error handled: "
+                            + e.getMessage()
+            );
         }
 
         // =========================
@@ -168,6 +187,10 @@ order.pay();
                 "Orders: " + manager2.getOrderCount()
         );
 
+        // =========================
+        // DISPLAY USERS
+        // =========================
+
         System.out.println("\n--- USERS ---");
 
         for (var user : manager2.getUsers()) {
@@ -179,6 +202,10 @@ order.pay();
             System.out.println("------------------");
         }
 
+        // =========================
+        // DISPLAY PRODUCTS
+        // =========================
+
         System.out.println("\n--- PRODUCTS ---");
 
         for (Product product : manager2.getProducts()) {
@@ -186,38 +213,12 @@ order.pay();
             System.out.println(product);
         }
 
+        // =========================
+        // END
+        // =========================
+
         System.out.println("\n=================================");
-        System.out.println(" Exception handling completed!");
+        System.out.println(" Factory integration completed!");
         System.out.println("=================================");
-    }
-
-    // =========================
-    // PRODUCT CREATION
-    // =========================
-
-    private static Product createProduct(
-            String id,
-            String name,
-            double price,
-            int stock) {
-
-        try {
-
-            return new Product(
-                    id,
-                    name,
-                    price,
-                    stock
-            );
-
-        } catch (IllegalArgumentException e) {
-
-            System.out.println(
-                    "Product creation error: "
-                            + e.getMessage()
-            );
-
-            return null;
-        }
     }
 }
