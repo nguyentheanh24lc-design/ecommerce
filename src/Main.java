@@ -2,6 +2,7 @@ import exception.InvalidPriceException;
 import factory.ProductFactory;
 import manager.MarketplaceManager;
 import model.Product;
+import model.Order;
 import util.FileManager;
 
 import java.util.List;
@@ -47,6 +48,10 @@ public class Main {
                     showBasicStatistics();
                     break;
 
+                case 5:
+                    showBusinessReports();
+                    break;
+
                 case 0:
                     saveProducts();
                     running = false;
@@ -82,7 +87,7 @@ public class Main {
                 "========================================"
         );
         System.out.println(
-                "1. Quản lý sản phẩm"
+        "1. Quản lý sản phẩm"
         );
         System.out.println(
                 "2. Xem tất cả sản phẩm"
@@ -93,6 +98,11 @@ public class Main {
         System.out.println(
                 "4. Thống kê sản phẩm"
         );
+
+        System.out.println(
+                "5. Báo cáo kinh doanh"
+        );
+
         System.out.println(
                 "0. Thoát"
         );
@@ -616,6 +626,253 @@ public class Main {
             );
         }
     }
+
+    private static void showBusinessReports() {
+
+        boolean running = true;
+
+        while (running) {
+
+                System.out.println();
+                System.out.println(
+                        "========================================"
+                );
+                System.out.println(
+                        "           BÁO CÁO KINH DOANH"
+                );
+                System.out.println(
+                        "========================================"
+                );
+
+                System.out.println(
+                        "1. Tổng quan kinh doanh"
+                );
+
+                System.out.println(
+                        "2. Sản phẩm bán chạy nhất"
+                );
+
+                System.out.println(
+                        "3. Báo cáo doanh thu đơn hàng"
+                );
+
+                System.out.println(
+                        "4. Báo cáo tồn kho"
+                );
+
+                System.out.println(
+                        "0. Quay lại"
+                );
+
+                System.out.println(
+                        "========================================"
+                );
+
+                int choice = readInt(
+                        "Chọn chức năng: "
+                );
+
+                switch (choice) {
+
+                case 1:
+                        showBusinessOverview();
+                        break;
+
+                case 2:
+                        showBestSellingProduct();
+                        break;
+
+                case 3:
+                        showOrderRevenueReport();
+                        break;
+
+                case 4:
+                        showInventoryReport();
+                        break;
+
+                case 0:
+                        running = false;
+                        break;
+
+                default:
+                        System.out.println(
+                                "Lựa chọn không hợp lệ."
+                        );
+                }
+        }
+}
+
+        private static void showBusinessOverview() {
+
+        System.out.println();
+        System.out.println(
+                "--------- TỔNG QUAN KINH DOANH ---------"
+        );
+
+        System.out.println(
+                "Số người dùng: "
+                        + manager.getUserCount()
+        );
+
+        System.out.println(
+                "Số sản phẩm: "
+                        + manager.getProductCount()
+        );
+
+        System.out.println(
+                "Số đơn hàng: "
+                        + manager.getOrderCount()
+        );
+
+        System.out.println(
+                "Tổng sản phẩm đã bán: "
+                        + manager.calculateTotalItemsSold()
+        );
+
+        System.out.println(
+                "Tổng doanh thu: "
+                        + manager.calculateTotalRevenue()
+        );
+        }
+
+        private static void showBestSellingProduct() {
+
+        System.out.println();
+        System.out.println(
+                "--------- SẢN PHẨM BÁN CHẠY ---------"
+        );
+
+        Product product =
+                manager.findBestSellingProduct();
+
+        if (product == null) {
+
+                System.out.println(
+                        "Chưa có dữ liệu bán hàng."
+                );
+
+                return;
+        }
+
+        int soldQuantity =
+                manager.getSoldQuantity(
+                        product.getId()
+                );
+
+        System.out.println(
+                "Sản phẩm bán chạy nhất:"
+        );
+
+        System.out.println(product);
+
+        System.out.println(
+                "Số lượng đã bán: "
+                        + soldQuantity
+        );
+        }
+
+        private static void showOrderRevenueReport() {
+
+        System.out.println();
+        System.out.println(
+                "--------- DOANH THU ĐƠN HÀNG ---------"
+        );
+
+        if (manager.getOrders().isEmpty()) {
+
+                System.out.println(
+                        "Chưa có đơn hàng."
+                );
+
+                return;
+        }
+
+        for (Order order :
+                manager.getOrders()) {
+
+                System.out.println(
+                        "Mã đơn: "
+                                + order.getId()
+                );
+
+                System.out.println(
+                        "Trạng thái: "
+                                + order.getStatus()
+                );
+
+                System.out.println(
+                        "Tổng tiền: "
+                                + order.calculateTotal()
+                );
+
+                System.out.println(
+                        "----------------------------------------"
+                );
+        }
+
+        System.out.println(
+                "TỔNG DOANH THU: "
+                        + manager.calculateTotalRevenue()
+        );
+        }
+
+        private static void showInventoryReport() {
+
+        System.out.println();
+        System.out.println(
+                "--------- BÁO CÁO TỒN KHO ---------"
+        );
+
+        List<Product> products =
+                manager.getProducts();
+
+        if (products.isEmpty()) {
+
+                System.out.println(
+                        "Chưa có sản phẩm."
+                );
+
+                return;
+        }
+
+        int totalStock = 0;
+
+        double totalInventoryValue = 0;
+
+        for (Product product : products) {
+
+                totalStock += product.getStock();
+
+                totalInventoryValue +=
+                        product.getPrice()
+                                * product.getStock();
+        }
+
+        Product lowestStockProduct =
+                manager.findLowestStockProduct();
+
+        System.out.println(
+                "Tổng số lượng tồn kho: "
+                        + totalStock
+        );
+
+        System.out.println(
+                "Tổng giá trị tồn kho: "
+                        + totalInventoryValue
+        );
+
+        if (lowestStockProduct != null) {
+
+                System.out.println();
+                System.out.println(
+                        "Sản phẩm có tồn kho thấp nhất:"
+                );
+
+                System.out.println(
+                        lowestStockProduct
+                );
+        }
+        }
 
     // ==============================
     // FILE PERSISTENCE

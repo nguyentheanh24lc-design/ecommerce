@@ -246,6 +246,130 @@ public class MarketplaceManager implements Searchable<Product> {
         return orders.size();
     }
 
+    public double calculateTotalRevenue() {
+
+    double totalRevenue = 0;
+
+    for (Order order : orders) {
+
+        if (!Order.STATUS_CANCELLED.equals(
+                order.getStatus())) {
+
+            totalRevenue += order.calculateTotal();
+        }
+    }
+
+    return totalRevenue;
+    }
+
+    public int calculateTotalItemsSold() {
+
+    int totalItemsSold = 0;
+
+    for (Order order : orders) {
+
+        if (Order.STATUS_CANCELLED.equals(
+                order.getStatus())) {
+            continue;
+        }
+
+        totalItemsSold += order.getTotalQuantity();
+    }
+
+    return totalItemsSold;
+    }
+
+    public Product findBestSellingProduct() {
+
+    Product bestProduct = null;
+    int highestQuantity = 0;
+
+    for (Product product : products) {
+
+        int soldQuantity = 0;
+
+        for (Order order : orders) {
+
+            if (Order.STATUS_CANCELLED.equals(
+                    order.getStatus())) {
+                continue;
+            }
+
+            for (var item : order.getItems()) {
+
+                if (item.getProduct()
+                        .equals(product)) {
+
+                    soldQuantity +=
+                            item.getQuantity();
+                }
+            }
+        }
+
+        if (soldQuantity > highestQuantity) {
+
+            highestQuantity = soldQuantity;
+            bestProduct = product;
+        }
+    }
+
+    return bestProduct;
+    }
+
+    public int getSoldQuantity(
+        String productId) {
+
+    if (productId == null
+            || productId.trim().isEmpty()) {
+
+        return 0;
+    }
+
+    int total = 0;
+
+    for (Order order : orders) {
+
+        if (Order.STATUS_CANCELLED.equals(
+                order.getStatus())) {
+            continue;
+        }
+
+        for (var item : order.getItems()) {
+
+            if (item.getProduct()
+                    .getId()
+                    .equalsIgnoreCase(
+                            productId.trim())) {
+
+                total += item.getQuantity();
+            }
+        }
+    }
+
+    return total;
+    }
+
+    public Product findLowestStockProduct() {
+
+    if (products.isEmpty()) {
+        return null;
+    }
+
+    Product lowestStockProduct =
+            products.get(0);
+
+    for (Product product : products) {
+
+        if (product.getStock()
+                < lowestStockProduct.getStock()) {
+
+            lowestStockProduct = product;
+        }
+    }
+
+    return lowestStockProduct;
+    }
+
     @Override
     public String toString() {
         return "MarketplaceManager{" +
