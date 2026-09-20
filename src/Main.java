@@ -88,6 +88,23 @@ public class Main {
         System.out.println(product2);
 
         // =========================
+        // SEARCH TEST
+        // =========================
+
+        System.out.println("\n--- SEARCH TEST ---");
+
+        Product foundProduct = manager1.findById("P001");
+
+        System.out.println("Find by ID P001:");
+        System.out.println(foundProduct);
+
+        System.out.println("\nFind products by keyword 'lap':");
+
+        for (Product product : manager1.findByKeyword("lap")) {
+        System.out.println(product);
+        }
+
+        // =========================
         // ORDER + STRATEGY TEST
         // =========================
 

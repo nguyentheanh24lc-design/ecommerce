@@ -3,13 +3,14 @@ package manager;
 import factory.ProductFactory;
 import model.Order;
 import model.Product;
+import model.Searchable;
 import model.User;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class MarketplaceManager {
+public class MarketplaceManager implements Searchable<Product> {
 
     // Singleton instance
     private static MarketplaceManager instance;
@@ -152,6 +153,35 @@ public class MarketplaceManager {
         return null;
     }
 
+    @Override
+    public Product findById(String id) {
+        return findProductById(id);
+    }
+
+    @Override
+    public List<Product> findByKeyword(String keyword) {
+
+        List<Product> results = new ArrayList<>();
+
+        if (keyword == null || keyword.trim().isEmpty()) {
+            return results;
+        }
+
+        String normalizedKeyword = keyword.trim().toLowerCase();
+
+        for (Product product : products) {
+
+            if (product.getName()
+                    .toLowerCase()
+                    .contains(normalizedKeyword)) {
+
+                results.add(product);
+            }
+        }
+
+        return results;
+    }
+
     public List<Product> getProducts() {
         return Collections.unmodifiableList(products);
     }
@@ -224,4 +254,4 @@ public class MarketplaceManager {
                 ", orders=" + orders.size() +
                 '}';
     }
-};
+}
