@@ -1,3 +1,5 @@
+import java.util.List;
+
 import factory.ProductFactory;
 import manager.MarketplaceManager;
 import model.Admin;
@@ -7,6 +9,7 @@ import model.Product;
 import model.Seller;
 import model.Order;
 import strategy.BankTransferPayment;
+import util.FileManager;
 
 public class Main {
 
@@ -228,6 +231,28 @@ public class Main {
         for (Product product : manager2.getProducts()) {
 
             System.out.println(product);
+        }
+
+        // =========================
+        // FILE PERSISTENCE TEST
+        // =========================
+
+        System.out.println("\n--- FILE PERSISTENCE TEST ---");
+
+        FileManager.saveProducts(
+                manager2.getProducts()
+        );
+
+        List<Product> loadedProducts =
+                FileManager.loadProducts();
+
+        System.out.println(
+                "Loaded products: "
+                        + loadedProducts.size()
+        );
+
+        for (Product product : loadedProducts) {
+        System.out.println(product);
         }
 
         // =========================
