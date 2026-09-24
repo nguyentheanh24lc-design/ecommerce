@@ -6,132 +6,132 @@ import java.util.Objects;
 
 public class OrderItem {
 
-    private Product product;
-    private int quantity;
+  private Product product;
+  private int quantity;
 
-    public OrderItem() {
-        this(new Product(), 1);
+  public OrderItem() {
+    this(new Product(), 1);
+  }
+
+  public OrderItem(Product product, int quantity) {
+    setProduct(product);
+
+    try {
+      setQuantity(quantity);
+    } catch (InvalidQuantityException e) {
+      throw new IllegalArgumentException(e.getMessage());
+    }
+  }
+
+  // =========================
+  // PRODUCT
+  // =========================
+
+  public Product getProduct() {
+    return product;
+  }
+
+  public void setProduct(Product product) {
+    if (product == null) {
+      throw new IllegalArgumentException(
+          "Product cannot be null."
+      );
     }
 
-    public OrderItem(Product product, int quantity) {
-        setProduct(product);
+    this.product = product;
+  }
 
-        try {
-            setQuantity(quantity);
-        } catch (InvalidQuantityException e) {
-            throw new IllegalArgumentException(e.getMessage());
-        }
+  // =========================
+  // QUANTITY
+  // =========================
+
+  public int getQuantity() {
+    return quantity;
+  }
+
+  public void setQuantity(int quantity)
+      throws InvalidQuantityException {
+
+    if (quantity <= 0) {
+      throw new InvalidQuantityException(
+          "Product quantity must be greater than 0."
+      );
     }
 
-    // =========================
-    // PRODUCT
-    // =========================
+    this.quantity = quantity;
+  }
 
-    public Product getProduct() {
-        return product;
+  // =========================
+  // BUSINESS METHODS
+  // =========================
+
+  public double calculateSubtotal() {
+    return product.getPrice() * quantity;
+  }
+
+  public void increaseQuantity(int amount) {
+
+    if (amount <= 0) {
+      throw new IllegalArgumentException(
+          "Increase amount must be greater than 0."
+      );
     }
 
-    public void setProduct(Product product) {
-        if (product == null) {
-            throw new IllegalArgumentException(
-                    "Product cannot be null."
-            );
-        }
+    quantity += amount;
+  }
 
-        this.product = product;
+  public void decreaseQuantity(int amount) {
+
+    if (amount <= 0) {
+      throw new IllegalArgumentException(
+          "Decrease amount must be greater than 0."
+      );
     }
 
-    // =========================
-    // QUANTITY
-    // =========================
-
-    public int getQuantity() {
-        return quantity;
+    if (quantity - amount <= 0) {
+      throw new IllegalArgumentException(
+          "Quantity must be greater than 0."
+      );
     }
 
-    public void setQuantity(int quantity)
-            throws InvalidQuantityException {
+    quantity -= amount;
+  }
 
-        if (quantity <= 0) {
-            throw new InvalidQuantityException(
-                    "Product quantity must be greater than 0."
-            );
-        }
+  // =========================
+  // OBJECT METHODS
+  // =========================
 
-        this.quantity = quantity;
+  @Override
+  public String toString() {
+    return "OrderItem{" +
+        "productId='" + product.getId() + '\'' +
+        ", productName='" + product.getName() + '\'' +
+        ", quantity=" + quantity +
+        ", subtotal=" + calculateSubtotal() +
+        '}';
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+
+    if (this == obj) {
+      return true;
     }
 
-    // =========================
-    // BUSINESS METHODS
-    // =========================
-
-    public double calculateSubtotal() {
-        return product.getPrice() * quantity;
+    if (!(obj instanceof OrderItem)) {
+      return false;
     }
 
-    public void increaseQuantity(int amount) {
+    OrderItem orderItem = (OrderItem) obj;
 
-        if (amount <= 0) {
-            throw new IllegalArgumentException(
-                    "Increase amount must be greater than 0."
-            );
-        }
+    return Objects.equals(
+        product.getId(),
+        orderItem.product.getId()
+    );
+  }
 
-        quantity += amount;
-    }
-
-    public void decreaseQuantity(int amount) {
-
-        if (amount <= 0) {
-            throw new IllegalArgumentException(
-                    "Decrease amount must be greater than 0."
-            );
-        }
-
-        if (quantity - amount <= 0) {
-            throw new IllegalArgumentException(
-                    "Quantity must be greater than 0."
-            );
-        }
-
-        quantity -= amount;
-    }
-
-    // =========================
-    // OBJECT METHODS
-    // =========================
-
-    @Override
-    public String toString() {
-        return "OrderItem{" +
-                "productId='" + product.getId() + '\'' +
-                ", productName='" + product.getName() + '\'' +
-                ", quantity=" + quantity +
-                ", subtotal=" + calculateSubtotal() +
-                '}';
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-
-        if (this == obj) {
-            return true;
-        }
-
-        if (!(obj instanceof OrderItem)) {
-            return false;
-        }
-
-        OrderItem orderItem = (OrderItem) obj;
-
-        return Objects.equals(
-                product.getId(),
-                orderItem.product.getId()
-        );
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(product.getId());
-    }
+  @Override
+  public int hashCode() {
+    return Objects.hash(product.getId());
+  }
 }

@@ -4,79 +4,79 @@ import model.Product;
 
 public class ProductFactory {
 
-    public static final String TYPE_BASIC = "BASIC";
-    public static final String TYPE_PREMIUM = "PREMIUM";
+  public static final String TYPE_BASIC = "BASIC";
+  public static final String TYPE_PREMIUM = "PREMIUM";
 
-    private ProductFactory() {
+  private ProductFactory() {
+  }
+
+  public static Product createProduct(
+      String type,
+      String id,
+      String name,
+      double price,
+      int stock) {
+
+    if (type == null || type.trim().isEmpty()) {
+      throw new IllegalArgumentException(
+          "Product type cannot be empty."
+      );
     }
 
-    public static Product createProduct(
-            String type,
-            String id,
-            String name,
-            double price,
-            int stock) {
+    String normalizedType = type.trim().toUpperCase();
 
-        if (type == null || type.trim().isEmpty()) {
-            throw new IllegalArgumentException(
-                    "Product type cannot be empty."
-            );
-        }
+    switch (normalizedType) {
 
-        String normalizedType = type.trim().toUpperCase();
+      case TYPE_BASIC:
+        return createBasicProduct(
+            id,
+            name,
+            price,
+            stock
+        );
 
-        switch (normalizedType) {
+      case TYPE_PREMIUM:
+        return createPremiumProduct(
+            id,
+            name,
+            price,
+            stock
+        );
 
-            case TYPE_BASIC:
-                return createBasicProduct(
-                        id,
-                        name,
-                        price,
-                        stock
-                );
-
-            case TYPE_PREMIUM:
-                return createPremiumProduct(
-                        id,
-                        name,
-                        price,
-                        stock
-                );
-
-            default:
-                throw new IllegalArgumentException(
-                        "Unknown product type: " + type
-                );
-        }
-    }
-
-    public static Product createBasicProduct(
-            String id,
-            String name,
-            double price,
-            int stock) {
-
-        return new Product(
-                id,
-                name,
-                price,
-                stock
+      default:
+        throw new IllegalArgumentException(
+            "Unknown product type: " + type
         );
     }
+  }
 
-    public static Product createPremiumProduct(
-            String id,
-            String name,
-            double price,
-            int stock) {
+  public static Product createBasicProduct(
+      String id,
+      String name,
+      double price,
+      int stock) {
 
-        double premiumPrice = price * 1.2;
+    return new Product(
+        id,
+        name,
+        price,
+        stock
+    );
+  }
 
-        return new Product(
-                id,
-                name + " Premium",
-                premiumPrice,
-                stock
-        );
-    }
+  public static Product createPremiumProduct(
+      String id,
+      String name,
+      double price,
+      int stock) {
+
+    double premiumPrice = price * 1.2;
+
+    return new Product(
+        id,
+        name + " Premium",
+        premiumPrice,
+        stock
+    );
+  }
 }

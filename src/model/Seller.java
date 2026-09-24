@@ -11,112 +11,112 @@ private String shopName;
 private List<Product> products;
 
 public Seller() {
-    this(
-            "S000",
-            "Seller1",
-            "seller1@gmail.com",
-            "Shop1"
-    );
+  this(
+      "S000",
+      "Seller1",
+      "seller1@gmail.com",
+      "Shop1"
+  );
 }
 
 public Seller(
-        String id,
-        String name,
-        String email,
-        String shopName) {
+    String id,
+    String name,
+    String email,
+    String shopName) {
 
-    super(id, name, email);
+  super(id, name, email);
 
-    setShopName(shopName);
+  setShopName(shopName);
 
-    this.products = new ArrayList<>();
+  this.products = new ArrayList<>();
 }
 
 public String getShopName() {
-    return shopName;
+  return shopName;
 }
 
 public void setShopName(String shopName) {
 
-    if (shopName == null ||
-            shopName.trim().length() < 2) {
+  if (shopName == null ||
+      shopName.trim().length() < 2) {
 
-        throw new IllegalArgumentException(
-                "Shop name must contain at least 2 characters."
-        );
-    }
+    throw new IllegalArgumentException(
+        "Shop name must contain at least 2 characters."
+    );
+  }
 
-    this.shopName = shopName.trim();
+  this.shopName = shopName.trim();
 }
 
 public List<Product> getProducts() {
-    return Collections.unmodifiableList(products);
+  return Collections.unmodifiableList(products);
 }
 
 public boolean addProduct(Product product) {
 
-    if (product == null) {
-        throw new IllegalArgumentException(
-                "Product cannot be null."
-        );
-    }
+  if (product == null) {
+    throw new IllegalArgumentException(
+        "Product cannot be null."
+    );
+  }
 
-    if (products.contains(product)) {
-        return false;
-    }
+  if (products.contains(product)) {
+    return false;
+  }
 
-    products.add(product);
+  products.add(product);
 
-    return true;
+  return true;
 }
 
 public boolean removeProduct(Product product) {
 
-    if (product == null) {
-        return false;
-    }
+  if (product == null) {
+    return false;
+  }
 
-    return products.remove(product);
+  return products.remove(product);
 }
 
 public Product findProductById(String productId) {
 
-    if (productId == null ||
-            productId.trim().isEmpty()) {
-
-        return null;
-    }
-
-    for (Product product : products) {
-
-        if (product.getId().equalsIgnoreCase(
-                productId.trim())) {
-
-            return product;
-        }
-    }
+  if (productId == null ||
+      productId.trim().isEmpty()) {
 
     return null;
+  }
+
+  for (Product product : products) {
+
+    if (product.getId().equalsIgnoreCase(
+        productId.trim())) {
+
+      return product;
+    }
+  }
+
+  return null;
 }
 
 public int getProductCount() {
-    return products.size();
+  return products.size();
 }
 
 @Override
 public void displayRole() {
-    System.out.println("Role: Seller");
+  System.out.println("Role: Seller");
 }
 
 @Override
 public String toString() {
 
-    return "Seller{" +
-            "id='" + getId() + '\'' +
-            ", name='" + getName() + '\'' +
-            ", email='" + getEmail() + '\'' +
-            ", shopName='" + shopName + '\'' +
-            ", productCount=" + products.size() +
-            '}';
+  return "Seller{" +
+      "id='" + getId() + '\'' +
+      ", name='" + getName() + '\'' +
+      ", email='" + getEmail() + '\'' +
+      ", shopName='" + shopName + '\'' +
+      ", productCount=" + products.size() +
+      '}';
 }
 }

@@ -5,10 +5,10 @@ String getId();
 
 default boolean hasId(String id) {
 
-    if (id == null || id.trim().isEmpty()) {
-        return false;
-    }
+  if (id == null || id.trim().isEmpty()) {
+    return false;
+  }
 
-    return getId().equalsIgnoreCase(id.trim());
+  return getId().equalsIgnoreCase(id.trim());
 }
 }
