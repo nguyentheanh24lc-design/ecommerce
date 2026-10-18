@@ -14,7 +14,7 @@ import java.util.List;
 public class FileManager {
 
   private static final String PRODUCT_FILE =
-      "products.csv";
+      "data/products.csv";
 
   private FileManager() {
     // Prevent creating FileManager objects
@@ -26,6 +26,12 @@ public class FileManager {
 
   public static void saveProducts(
       List<Product> products) {
+
+    File directory = new File("data");
+    if (!directory.isDirectory() && !directory.mkdirs()) {
+      System.out.println("Error saving products: cannot create data directory.");
+      return;
+    }
 
     try (BufferedWriter writer =
             new BufferedWriter(

@@ -30,11 +30,12 @@ ecommerce/
 │   ├── strategy/          # Các lớp mô hình hóa phương thức thanh toán
 │   ├── exception/         # Ngoại lệ tự định nghĩa
 │   └── util/              # Đọc và ghi dữ liệu
-├── users.csv
-├── products.csv
-├── orders.csv
-├── order_items.csv
-├── cart_items.csv
+├── data/
+│   ├── users.csv
+│   ├── products.csv
+│   ├── orders.csv
+│   ├── order_items.csv
+│   └── cart_items.csv
 └── README.md
 ```
 
@@ -42,7 +43,7 @@ Thư mục `out` sẽ được tạo khi build để chứa các file `.class`.
 
 ## 3. Build chương trình
 
-Mở PowerShell tại thư mục gốc của dự án, là thư mục chứa `src` và các file CSV. Nếu cần chuyển thư mục, dùng đường dẫn thực tế trên máy, ví dụ:
+Mở PowerShell tại thư mục gốc của dự án, là thư mục chứa `src` và `data`. Nếu cần chuyển thư mục, dùng đường dẫn thực tế trên máy, ví dụ:
 
 ```powershell
 cd "C:\Code\Lap trinh huong doi tuong\ecommerce"
@@ -106,7 +107,7 @@ Tạo đơn thành công sẽ trừ tồn kho và làm trống giỏ. Đơn hàn
 | `order_items.csv` | Sản phẩm trong đơn, số lượng và đơn giá lúc mua    |
 | `cart_items.csv`  | Sản phẩm và số lượng trong giỏ của từng Buyer      |
 
-Chương trình đọc dữ liệu khi khởi động, lưu sau các thao tác quản lý và khi chọn thoát. Các file được tìm theo **thư mục đang chạy chương trình**, vì vậy cần chạy từ thư mục gốc dự án, không chuyển vào `src` hoặc `out`.
+Chương trình đọc dữ liệu khi khởi động, lưu sau các thao tác quản lý và khi chọn thoát. Cả 5 file CSV nằm trong thư mục **`data`**. Đường dẫn `data` được tính từ **thư mục đang chạy chương trình**, vì vậy cần chạy từ thư mục gốc dự án, không chuyển vào `src`, `out` hoặc `data`. Khi lưu, chương trình tự tạo thư mục `data` nếu chưa có.
 
 Nếu bắt đầu khi chưa có file dữ liệu, chương trình tạo các file khi lưu. Khi đã có bộ dữ liệu, hãy giữ đủ 5 file cùng nhau để bảo toàn các liên kết. Nếu file bị lỗi hoặc thiếu dữ liệu liên kết, chương trình báo lỗi và dừng lúc khởi động để tránh ghi đè.
 
@@ -117,3 +118,7 @@ Nếu bắt đầu khi chưa có file dữ liệu, chương trình tạo các fi
 - **`UnsupportedClassVersionError`:** kiểm tra phiên bản `java` đang chạy; dùng Java 11 trở lên và build lại bằng lệnh ở mục 3.
 - **Không thấy dữ liệu CSV:** kiểm tra thư mục làm việc hiện tại bằng `Get-Location`; chuyển về thư mục gốc dự án.
 - **Tiếng Việt hiển thị sai:** sử dụng terminal hỗ trợ UTF-8 và font có tiếng Việt; có thể chuyển mã trang console bằng `chcp 65001` rồi chạy lại chương trình.
+
+## 7. Link Github
+
+- https://github.com/nguyentheanh24lc-design/ecommerce.git

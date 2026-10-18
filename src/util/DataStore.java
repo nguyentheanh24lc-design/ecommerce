@@ -9,6 +9,11 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 public final class DataStore {
+  private static final Path DATA_DIRECTORY = Path.of("data");
+
+  private static Path dataPath(String file) {
+    return DATA_DIRECTORY.resolve(file);
+  }
   private DataStore() { }
 
   public static void save(MarketplaceManager manager) {
@@ -47,25 +52,26 @@ public final class DataStore {
     Map<String, byte[]> previous = new LinkedHashMap<>();
     List<String> replaced = new ArrayList<>();
     try {
+      Files.createDirectories(DATA_DIRECTORY);
       // Prepare every file before replacing existing data.
       for (var entry : files.entrySet()) {
-        Path target = Path.of(entry.getKey());
+        Path target = dataPath(entry.getKey());
         previous.put(entry.getKey(), Files.exists(target) ? Files.readAllBytes(target) : null);
-        Files.writeString(Path.of(entry.getKey() + ".tmp"), encode(entry.getValue()), StandardCharsets.UTF_8);
+        Files.writeString(dataPath(entry.getKey() + ".tmp"), encode(entry.getValue()), StandardCharsets.UTF_8);
       }
       for (String file : files.keySet()) {
         try {
-          Files.move(Path.of(file + ".tmp"), Path.of(file), StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
+          Files.move(dataPath(file + ".tmp"), dataPath(file), StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
         } catch (AtomicMoveNotSupportedException e) {
-          Files.move(Path.of(file + ".tmp"), Path.of(file), StandardCopyOption.REPLACE_EXISTING);
+          Files.move(dataPath(file + ".tmp"), dataPath(file), StandardCopyOption.REPLACE_EXISTING);
         }
         replaced.add(file);
       }
     } catch (IOException e) {
       for (String file : replaced) {
         try {
-          if (previous.get(file) == null) Files.deleteIfExists(Path.of(file));
-          else Files.write(Path.of(file), previous.get(file));
+          if (previous.get(file) == null) Files.deleteIfExists(dataPath(file));
+          else Files.write(dataPath(file), previous.get(file));
         } catch (IOException restoreError) {
           e.addSuppressed(restoreError);
         }
@@ -81,10 +87,10 @@ public final class DataStore {
     List<String> dataset = List.of("users.csv", "products.csv", "orders.csv", "order_items.csv", "cart_items.csv");
     boolean hasSavedDataset = dataset.stream()
         .filter(file -> !file.equals("products.csv"))
-        .anyMatch(file -> Files.exists(Path.of(file)));
+        .anyMatch(file -> Files.exists(dataPath(file)));
     if (hasSavedDataset) {
       for (String file : dataset) {
-        if (!Files.exists(Path.of(file))) {
+        if (!Files.exists(dataPath(file))) {
           throw new IllegalStateException("Missing data file: " + file);
         }
       }
@@ -158,7 +164,7 @@ public final class DataStore {
   }
 
   private static List<String[]> read(String file, String header) {
-    Path path = Path.of(file);
+    Path path = dataPath(file);
     if (!Files.exists(path)) return new ArrayList<>();
     try {
       String text = Files.readString(path, StandardCharsets.UTF_8);
