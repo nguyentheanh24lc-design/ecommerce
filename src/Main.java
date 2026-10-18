@@ -7,6 +7,8 @@ import model.User;
 import model.Buyer;
 import model.Seller;
 import model.Admin;
+import model.Cart;
+import model.CartItem;
 import util.FileManager;
 
 import java.util.List;
@@ -58,6 +60,10 @@ public class Main {
 
         case 6:
           userMenu();
+          break;
+
+        case 7:
+          cartMenu();
           break;
 
         case 0:
@@ -115,6 +121,9 @@ public class Main {
         "6. Quản lý người dùng"
     );
     System.out.println(
+        "7. Quản lý giỏ hàng"
+    );
+    System.out.println(
         "0. Thoát"
     );
     System.out.println(
@@ -125,6 +134,70 @@ public class Main {
   // ==============================
   // PRODUCT MENU
   // ==============================
+
+  private static void cartMenu() {
+    User user = manager.findUserById(readText("Nhập ID Buyer: "));
+    if (!(user instanceof Buyer)) {
+      System.out.println("Không tìm thấy Buyer. Hãy thêm Buyer trong quản lý người dùng.");
+      return;
+    }
+    Cart cart = ((Buyer) user).getCart();
+    boolean running = true;
+    while (running) {
+      System.out.println("\n--------- GIỎ HÀNG CỦA " + user.getName() + " ---------");
+      System.out.println("1. Thêm sản phẩm");
+      System.out.println("2. Sửa số lượng");
+      System.out.println("3. Xóa sản phẩm khỏi giỏ");
+      System.out.println("4. Tìm theo ID hoặc tên sản phẩm");
+      System.out.println("5. Xem giỏ hàng và tổng tiền");
+      System.out.println("0. Quay lại");
+      try {
+        switch (readInt("Chọn chức năng: ")) {
+          case 1:
+            Product product = manager.findProductById(readText("Nhập ID sản phẩm: "));
+            if (product == null) {
+              System.out.println("Không tìm thấy sản phẩm.");
+              break;
+            }
+            cart.addProduct(product, readInt("Nhập số lượng thêm: "));
+            System.out.println("Đã thêm sản phẩm vào giỏ hàng.");
+            break;
+          case 2:
+            cart.updateQuantity(readText("Nhập ID sản phẩm trong giỏ: "),
+                readInt("Nhập số lượng mới (lớn hơn 0): "));
+            System.out.println("Đã cập nhật số lượng.");
+            break;
+          case 3:
+            boolean removed = cart.removeProduct(readText("Nhập ID sản phẩm cần xóa khỏi giỏ: "));
+            System.out.println(removed ? "Đã xóa sản phẩm khỏi giỏ." : "Sản phẩm không có trong giỏ.");
+            break;
+          case 4:
+            showCartItems(cart.findByKeyword(readText("Nhập ID hoặc tên sản phẩm: ")));
+            break;
+          case 5:
+            showCartItems(cart.getItems());
+            System.out.println("Số loại sản phẩm: " + cart.getItems().size());
+            System.out.println("Tổng số lượng: " + cart.getTotalQuantity());
+            System.out.println("Tổng tiền giỏ hàng: " + cart.calculateTotal());
+            break;
+          case 0: running = false; break;
+          default: System.out.println("Lựa chọn không hợp lệ.");
+        }
+      } catch (IllegalArgumentException e) {
+        System.out.println("Không thể thực hiện: " + e.getMessage());
+      }
+    }
+  }
+
+  private static void showCartItems(List<CartItem> items) {
+    if (items.isEmpty()) {
+      System.out.println("Không có sản phẩm trong giỏ phù hợp.");
+      return;
+    }
+    for (CartItem item : items) {
+      System.out.println(item);
+    }
+  }
 
   private static void userMenu() {
     boolean running = true;

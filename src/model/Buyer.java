@@ -3,6 +3,11 @@ package model;
 public class Buyer extends User {
 
   private String shippingAddress;
+  private final Cart cart = new Cart();
+
+  public Cart getCart() {
+    return cart;
+  }
 
   public Buyer() {
     this(
