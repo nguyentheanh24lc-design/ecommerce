@@ -1,3 +1,16 @@
 id,name,price,stock
 P001,Laptop,1.5E7,10
 P002,Mouse Premium,600000.0,20
+P003,Keyboard Mechanical,1200000.0,15
+P004,Monitor 24 inch,3500000.0,8
+P005,Headphone Bluetooth,850000.0,25
+P006,USB-C Hub,450000.0,30
+P007,Webcam HD,700000.0,12
+P008,SSD 1TB,1800000.0,10
+P009,Wireless Mouse,250000.0,40
+P010,Mechanical Keyboard RGB,1650000.0,18
+P011,Gaming Monitor 27 inch,6500000.0,6
+P012,Laptop Stand,320000.0,22
+P013,USB Flash Drive 64GB,180000.0,50
+P014,External HDD 2TB,2200000.0,9
+P015,Portable Bluetooth Speaker,950000.0,14

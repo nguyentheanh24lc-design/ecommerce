@@ -78,6 +78,35 @@ public class MarketplaceManager implements Searchable<Product> {
     return Collections.unmodifiableList(users);
   }
 
+  public List<User> findUsersByKeyword(String keyword) {
+    List<User> results = new ArrayList<>();
+    if (keyword == null || keyword.trim().isEmpty()) {
+      return results;
+    }
+    String normalized = keyword.trim().toLowerCase(java.util.Locale.ROOT);
+    for (User user : users) {
+      if (user.getId().toLowerCase(java.util.Locale.ROOT).contains(normalized)
+          || user.getName().toLowerCase(java.util.Locale.ROOT).contains(normalized)
+          || user.getEmail().toLowerCase(java.util.Locale.ROOT).contains(normalized)) {
+        results.add(user);
+      }
+    }
+    return results;
+  }
+
+  public int getUserCountByType(Class<? extends User> type) {
+    if (type == null) {
+      throw new IllegalArgumentException("User type cannot be null.");
+    }
+    int count = 0;
+    for (User user : users) {
+      if (type.isInstance(user)) {
+        count++;
+      }
+    }
+    return count;
+  }
+
   // =========================
   // PRODUCT MANAGEMENT
   // =========================

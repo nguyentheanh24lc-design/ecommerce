@@ -3,6 +3,10 @@ import factory.ProductFactory;
 import manager.MarketplaceManager;
 import model.Product;
 import model.Order;
+import model.User;
+import model.Buyer;
+import model.Seller;
+import model.Admin;
 import util.FileManager;
 
 import java.util.List;
@@ -50,6 +54,10 @@ public class Main {
 
         case 5:
           showBusinessReports();
+          break;
+
+        case 6:
+          userMenu();
           break;
 
         case 0:
@@ -104,6 +112,9 @@ public class Main {
     );
 
     System.out.println(
+        "6. Quản lý người dùng"
+    );
+    System.out.println(
         "0. Thoát"
     );
     System.out.println(
@@ -114,6 +125,132 @@ public class Main {
   // ==============================
   // PRODUCT MENU
   // ==============================
+
+  private static void userMenu() {
+    boolean running = true;
+    while (running) {
+      System.out.println("\n--------- QUẢN LÝ NGƯỜI DÙNG ---------");
+      System.out.println("1. Thêm người dùng");
+      System.out.println("2. Sửa người dùng");
+      System.out.println("3. Xóa người dùng");
+      System.out.println("4. Tìm theo ID");
+      System.out.println("5. Tìm theo ID, tên hoặc email");
+      System.out.println("6. Xem tất cả người dùng");
+      System.out.println("7. Thống kê Buyer/Seller/Admin");
+      System.out.println("0. Quay lại");
+      try {
+        switch (readInt("Chọn chức năng: ")) {
+          case 1: addUser(); break;
+          case 2: editUser(); break;
+          case 3: deleteUser(); break;
+          case 4:
+            User user = manager.findUserById(readText("Nhập ID người dùng: "));
+            System.out.println(user == null ? "Không tìm thấy người dùng." : user);
+            break;
+          case 5:
+            showUsers(manager.findUsersByKeyword(readText("Nhập từ khóa: ")));
+            break;
+          case 6: showUsers(manager.getUsers()); break;
+          case 7:
+            System.out.println("Buyer: " + manager.getUserCountByType(Buyer.class));
+            System.out.println("Seller: " + manager.getUserCountByType(Seller.class));
+            System.out.println("Admin: " + manager.getUserCountByType(Admin.class));
+            System.out.println("Tổng số người dùng: " + manager.getUserCount());
+            break;
+          case 0: running = false; break;
+          default: System.out.println("Lựa chọn không hợp lệ.");
+        }
+      } catch (IllegalArgumentException e) {
+        System.out.println("Không thể thực hiện: " + e.getMessage());
+      }
+    }
+  }
+
+  private static void showUsers(List<User> users) {
+    if (users.isEmpty()) {
+      System.out.println("Không có người dùng phù hợp.");
+      return;
+    }
+    for (User user : users) {
+      System.out.println(user);
+    }
+    System.out.println("Số người dùng: " + users.size());
+  }
+
+  private static void addUser() {
+    String id = readText("Nhập ID người dùng: ");
+    if (manager.findUserById(id) != null) {
+      System.out.println("ID người dùng đã tồn tại.");
+      return;
+    }
+    System.out.println("1. Buyer | 2. Seller | 3. Admin");
+    int type = readInt("Chọn loại người dùng: ");
+    if (type < 1 || type > 3) {
+      System.out.println("Loại người dùng không hợp lệ.");
+      return;
+    }
+    String name = readText("Nhập tên: ");
+    String email = readText("Nhập email: ");
+    User user;
+    switch (type) {
+      case 1:
+        user = new Buyer(id, name, email, readText("Nhập địa chỉ giao hàng: "));
+        break;
+      case 2:
+        user = new Seller(id, name, email, readText("Nhập tên cửa hàng: "));
+        break;
+      default:
+        user = new Admin(id, name, email, readText("Nhập cấp quyền: "));
+    }
+    manager.addUser(user);
+    System.out.println("Thêm người dùng thành công!");
+    System.out.println(user);
+  }
+
+  private static void editUser() {
+    User user = manager.findUserById(readText("Nhập ID người dùng cần sửa: "));
+    if (user == null) {
+      System.out.println("Không tìm thấy người dùng.");
+      return;
+    }
+    System.out.println(user);
+    String name = readText("Nhập tên mới: ");
+    String email = readText("Nhập email mới: ");
+    // Validate every field before changing the existing object.
+    if (user instanceof Buyer) {
+      Buyer validated = new Buyer(user.getId(), name, email,
+          readText("Nhập địa chỉ giao hàng mới: "));
+      ((Buyer) user).setShippingAddress(validated.getShippingAddress());
+    } else if (user instanceof Seller) {
+      Seller validated = new Seller(user.getId(), name, email,
+          readText("Nhập tên cửa hàng mới: "));
+      ((Seller) user).setShopName(validated.getShopName());
+    } else if (user instanceof Admin) {
+      Admin validated = new Admin(user.getId(), name, email,
+          readText("Nhập cấp quyền mới: "));
+      ((Admin) user).setPermissionLevel(validated.getPermissionLevel());
+    }
+    user.setName(name);
+    user.setEmail(email);
+    System.out.println("Cập nhật người dùng thành công!");
+    System.out.println(user);
+  }
+
+  private static void deleteUser() {
+    String id = readText("Nhập ID người dùng cần xóa: ");
+    User user = manager.findUserById(id);
+    if (user == null) {
+      System.out.println("Không tìm thấy người dùng.");
+      return;
+    }
+    System.out.println(user);
+    if (!readText("Bạn có chắc chắn muốn xóa? (Y/N): ").equalsIgnoreCase("Y")) {
+      System.out.println("Đã hủy thao tác xóa.");
+      return;
+    }
+    manager.removeUser(id);
+    System.out.println("Xóa người dùng thành công!");
+  }
 
   private static void productMenu() {
 
