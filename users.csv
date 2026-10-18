@@ -1,0 +1,7 @@
+"id","role","name","email","detail"
+"B001","BUYER","Nguyễn Minh An","an@gmail.com","12 Nguyễn Trãi, TP.HCM"
+"B002","BUYER","Trần Thu Hà","ha@gmail.com","45 Lê Lợi, Hà Nội"
+"B003","BUYER","Lê Quốc Nam","nam@gmail.com","78 Trần Phú, Đà Nẵng"
+"S001","SELLER","Phạm Hoàng Long","long@gmail.com","Cửa hàng Công nghệ Long"
+"S002","SELLER","Võ Ngọc Mai","mai@gmail.com","Phụ kiện Ngọc Mai"
+"A001","ADMIN","Đặng Hải Linh","linh@gmail.com","HIGH"
