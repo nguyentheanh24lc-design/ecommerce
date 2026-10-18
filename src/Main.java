@@ -9,7 +9,7 @@ import model.Seller;
 import model.Admin;
 import model.Cart;
 import model.CartItem;
-import util.FileManager;
+import util.DataStore;
 
 import java.util.List;
 import java.util.Scanner;
@@ -24,7 +24,13 @@ public class Main {
 
   public static void main(String[] args) {
 
-    loadProducts();
+    try {
+      DataStore.load(manager);
+    } catch (RuntimeException e) {
+      System.out.println("Không thể tải dữ liệu: " + e.getMessage());
+      System.out.println("Chương trình dừng để tránh ghi đè dữ liệu lỗi.");
+      return;
+    }
 
     boolean running = true;
 
@@ -71,7 +77,7 @@ public class Main {
           break;
 
         case 0:
-          saveProducts();
+          saveData();
           running = false;
           System.out.println(
               "Đã thoát chương trình."
@@ -195,12 +201,13 @@ public class Main {
               break;
             }
             manager.cancelOrder(id);
-            saveProducts();
+            saveData();
             System.out.println("Đã hủy đơn và hoàn tồn kho.");
             break;
           case 0: running = false; break;
           default: System.out.println("Lựa chọn không hợp lệ.");
         }
+        DataStore.save(manager);
       } catch (IllegalArgumentException | IllegalStateException e) {
         System.out.println("Không thể thực hiện: " + e.getMessage());
       }
@@ -266,7 +273,7 @@ public class Main {
               break;
             }
             Order order = manager.createOrderFromCart(orderId, user.getId());
-            saveProducts();
+            saveData();
             System.out.println("Tạo đơn hàng thành công!");
             System.out.println(order);
             for (var item : order.getItems()) {
@@ -276,7 +283,8 @@ public class Main {
           case 0: running = false; break;
           default: System.out.println("Lựa chọn không hợp lệ.");
         }
-      } catch (IllegalArgumentException e) {
+        DataStore.save(manager);
+      } catch (IllegalArgumentException | IllegalStateException e) {
         System.out.println("Không thể thực hiện: " + e.getMessage());
       }
     }
@@ -326,7 +334,8 @@ public class Main {
           case 0: running = false; break;
           default: System.out.println("Lựa chọn không hợp lệ.");
         }
-      } catch (IllegalArgumentException e) {
+        DataStore.save(manager);
+      } catch (IllegalArgumentException | IllegalStateException e) {
         System.out.println("Không thể thực hiện: " + e.getMessage());
       }
     }
@@ -589,9 +598,7 @@ public class Main {
               stock
           );
 
-      FileManager.saveProducts(
-          manager.getProducts()
-      );
+      DataStore.save(manager);
 
       System.out.println();
       System.out.println(
@@ -659,9 +666,7 @@ public class Main {
     product.setPrice(newPrice);
     product.setStock(newStock);
 
-    FileManager.saveProducts(
-        manager.getProducts()
-    );
+    DataStore.save(manager);
 
     System.out.println();
     System.out.println(
@@ -742,9 +747,7 @@ public class Main {
 
     if (removed) {
 
-      FileManager.saveProducts(
-          manager.getProducts()
-      );
+      DataStore.save(manager);
 
       System.out.println(
           "Xóa sản phẩm thành công."
@@ -1186,42 +1189,9 @@ public class Main {
   // FILE PERSISTENCE
   // ==============================
 
-  private static void loadProducts() {
+  private static void saveData() {
 
-    List<Product> loadedProducts =
-        FileManager.loadProducts();
-
-    for (Product product :
-        loadedProducts) {
-
-      try {
-
-        manager.addProduct(product);
-
-      } catch (IllegalArgumentException e) {
-
-        System.out.println(
-            "Không thể load sản phẩm: "
-                + e.getMessage()
-        );
-      }
-    }
-
-    if (!loadedProducts.isEmpty()) {
-
-      System.out.println(
-          "Đã tải "
-              + loadedProducts.size()
-              + " sản phẩm từ products.csv."
-      );
-    }
-  }
-
-  private static void saveProducts() {
-
-    FileManager.saveProducts(
-        manager.getProducts()
-    );
+    DataStore.save(manager);
   }
 
   // ==============================

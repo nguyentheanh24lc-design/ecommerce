@@ -88,4 +88,12 @@ public class Cart {
   public void clear() {
     items.clear();
   }
+
+  // A saved cart may exceed current stock after another buyer places an order.
+  public void restoreProduct(Product product, int quantity) {
+    if (product == null || findByProductId(product.getId()) != null) {
+      throw new IllegalArgumentException("Invalid or duplicate saved cart product.");
+    }
+    items.add(new CartItem(product, quantity, false));
+  }
 }

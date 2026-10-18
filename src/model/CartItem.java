@@ -5,11 +5,18 @@ public class CartItem {
   private int quantity;
 
   public CartItem(Product product, int quantity) {
+    this(product, quantity, true);
+  }
+
+  CartItem(Product product, int quantity, boolean checkStock) {
     if (product == null) {
       throw new IllegalArgumentException("Product cannot be null.");
     }
     this.product = product;
-    setQuantity(quantity);
+    if (quantity <= 0 || (checkStock && quantity > product.getStock())) {
+      throw new IllegalArgumentException("Invalid cart quantity.");
+    }
+    this.quantity = quantity;
   }
 
   public Product getProduct() {

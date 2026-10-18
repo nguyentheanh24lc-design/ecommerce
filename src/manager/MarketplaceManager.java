@@ -59,6 +59,11 @@ public class MarketplaceManager implements Searchable<Product> {
       return false;
     }
 
+    for (Order order : orders) {
+      if (order.getBuyer() == user) {
+        throw new IllegalArgumentException("Cannot remove a buyer referenced by an order.");
+      }
+    }
     return users.remove(user);
   }
 
@@ -168,13 +173,16 @@ public class MarketplaceManager implements Searchable<Product> {
     }
 
     for (Order order : orders) {
-      if (Order.STATUS_PENDING.equals(order.getStatus())
-          || Order.STATUS_CONFIRMED.equals(order.getStatus())) {
-        for (var item : order.getItems()) {
-          if (item.getProduct() == product) {
-            throw new IllegalArgumentException("Cannot remove a product in an active order.");
-          }
+      for (var item : order.getItems()) {
+        if (item.getProduct() == product) {
+          throw new IllegalArgumentException("Cannot remove a product referenced by an order.");
         }
+      }
+    }
+    for (User user : users) {
+      if (user instanceof Buyer
+          && ((Buyer) user).getCart().findByProductId(productId) != null) {
+        throw new IllegalArgumentException("Cannot remove a product referenced by a cart.");
       }
     }
     return products.remove(product);

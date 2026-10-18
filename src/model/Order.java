@@ -165,6 +165,10 @@ public class Order implements Identifiable {
   }
 
   public void addItem(Product product, int quantity) {
+    addItem(product, quantity, product == null ? 0 : product.getPrice());
+  }
+
+  public void addItem(Product product, int quantity, double unitPrice) {
 
     if (product == null) {
       throw new IllegalArgumentException(
@@ -188,7 +192,7 @@ public class Order implements Identifiable {
     }
 
     OrderItem newItem =
-        new OrderItem(product, quantity);
+        new OrderItem(product, quantity, unitPrice);
 
     items.add(newItem);
   }
