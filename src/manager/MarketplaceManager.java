@@ -367,13 +367,41 @@ public class MarketplaceManager implements Searchable<Product> {
     return orders.size();
   }
 
+  public int getOrderCountByStatus(String status) {
+    int count = 0;
+    for (Order order : orders) {
+      if (order.getStatus().equals(status)) count++;
+    }
+    return count;
+  }
+
+  public long getTotalStock() {
+    long total = 0;
+    for (Product product : products) total += product.getStock();
+    return total;
+  }
+
+  public double calculateInventoryValue() {
+    double total = 0;
+    for (Product product : products) total += product.getPrice() * product.getStock();
+    return total;
+  }
+
+  public int getOutOfStockProductCount() {
+    int count = 0;
+    for (Product product : products) {
+      if (product.getStock() == 0) count++;
+    }
+    return count;
+  }
+
   public double calculateTotalRevenue() {
 
   double totalRevenue = 0;
 
   for (Order order : orders) {
 
-    if (!Order.STATUS_CANCELLED.equals(
+    if (Order.STATUS_COMPLETED.equals(
         order.getStatus())) {
 
       totalRevenue += order.calculateTotal();
@@ -389,7 +417,7 @@ public class MarketplaceManager implements Searchable<Product> {
 
   for (Order order : orders) {
 
-    if (Order.STATUS_CANCELLED.equals(
+    if (!Order.STATUS_COMPLETED.equals(
         order.getStatus())) {
       continue;
     }
@@ -411,7 +439,7 @@ public class MarketplaceManager implements Searchable<Product> {
 
     for (Order order : orders) {
 
-      if (Order.STATUS_CANCELLED.equals(
+      if (!Order.STATUS_COMPLETED.equals(
           order.getStatus())) {
         continue;
       }
@@ -450,7 +478,7 @@ public class MarketplaceManager implements Searchable<Product> {
 
   for (Order order : orders) {
 
-    if (Order.STATUS_CANCELLED.equals(
+    if (!Order.STATUS_COMPLETED.equals(
         order.getStatus())) {
       continue;
     }

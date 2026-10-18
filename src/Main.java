@@ -42,52 +42,26 @@ public class Main {
           "Chọn chức năng: "
       );
 
-      switch (choice) {
-
-        case 1:
-          productMenu();
-          break;
-
-        case 2:
-          showAllProducts();
-          break;
-
-        case 3:
-          searchProduct();
-          break;
-
-        case 4:
-          showBasicStatistics();
-          break;
-
-        case 5:
-          showBusinessReports();
-          break;
-
-        case 6:
-          userMenu();
-          break;
-
-        case 7:
-          cartMenu();
-          break;
-
-        case 8:
-          orderMenu();
-          break;
-
-        case 0:
-          saveData();
-          running = false;
-          System.out.println(
-              "Đã thoát chương trình."
-          );
-          break;
-
-        default:
-          System.out.println(
-              "Lựa chọn không hợp lệ."
-          );
+      try {
+        switch (choice) {
+          case 1: productMenu(); break;
+          case 2: showAllProducts(); break;
+          case 3: searchProduct(); break;
+          case 4: showBasicStatistics(); break;
+          case 5: showBusinessReports(); break;
+          case 6: userMenu(); break;
+          case 7: cartMenu(); break;
+          case 8: orderMenu(); break;
+          case 0:
+            saveData();
+            running = false;
+            System.out.println("Đã thoát chương trình.");
+            break;
+          default: System.out.println("Lựa chọn không hợp lệ.");
+        }
+      } catch (IllegalStateException e) {
+        System.out.println(e.getMessage());
+        System.out.println("Dữ liệu trong phiên vẫn được giữ. Hãy khắc phục lỗi và thử lưu lại.");
       }
     }
 
@@ -885,7 +859,7 @@ public class Main {
     int totalProducts =
         products.size();
 
-    int totalStock = 0;
+    long totalStock = 0;
 
     double totalInventoryValue = 0;
 
@@ -1014,6 +988,17 @@ public class Main {
 }
 
     private static void showBusinessOverview() {
+    System.out.println("Doanh thu và số lượng bán chỉ tính đơn COMPLETED.");
+    System.out.println("Buyer: " + manager.getUserCountByType(Buyer.class));
+    System.out.println("Seller: " + manager.getUserCountByType(Seller.class));
+    System.out.println("Admin: " + manager.getUserCountByType(Admin.class));
+    for (String status : List.of(Order.STATUS_PENDING, Order.STATUS_CONFIRMED,
+        Order.STATUS_COMPLETED, Order.STATUS_CANCELLED)) {
+      System.out.println("Đơn " + status + ": " + manager.getOrderCountByStatus(status));
+    }
+    System.out.println("Tổng tồn kho: " + manager.getTotalStock());
+    System.out.println("Giá trị tồn kho: " + manager.calculateInventoryValue());
+    System.out.println("Số sản phẩm hết hàng: " + manager.getOutOfStockProductCount());
 
     System.out.println();
     System.out.println(
@@ -1047,6 +1032,7 @@ public class Main {
     }
 
     private static void showBestSellingProduct() {
+    System.out.println("Chỉ tính sản phẩm trong đơn COMPLETED.");
 
     System.out.println();
     System.out.println(
@@ -1083,6 +1069,7 @@ public class Main {
     }
 
     private static void showOrderRevenueReport() {
+    System.out.println("Doanh thu ghi nhận chỉ tính đơn COMPLETED.");
 
     System.out.println();
     System.out.println(
@@ -1100,6 +1087,9 @@ public class Main {
 
     for (Order order :
         manager.getOrders()) {
+
+        System.out.println("Doanh thu ghi nhận: "
+            + (Order.STATUS_COMPLETED.equals(order.getStatus()) ? order.calculateTotal() : 0));
 
         System.out.println(
             "Mã đơn: "
@@ -1146,7 +1136,7 @@ public class Main {
         return;
     }
 
-    int totalStock = 0;
+    long totalStock = 0;
 
     double totalInventoryValue = 0;
 
@@ -1275,7 +1265,7 @@ public class Main {
         double value =
             Double.parseDouble(input);
 
-        if (value > 0) {
+        if (Double.isFinite(value) && value > 0) {
 
           return value;
         }

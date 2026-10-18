@@ -73,9 +73,9 @@ public class Product implements Identifiable {
 
   public void setPrice(double price) throws InvalidPriceException {
 
-    if (price <= MIN_PRICE) {
+    if (!Double.isFinite(price) || price <= MIN_PRICE) {
       throw new InvalidPriceException(
-          "Product price must be greater than 0."
+          "Product price must be finite and greater than 0."
       );
     }
 
@@ -98,9 +98,9 @@ public class Product implements Identifiable {
 
   public void increaseStock(int quantity) {
 
-    if (quantity <= 0) {
+    if (quantity <= 0 || (long) stock + quantity > Integer.MAX_VALUE) {
       throw new IllegalArgumentException(
-          "Increase quantity must be greater than 0."
+          "Increase quantity must be positive and must not overflow stock."
       );
     }
 
