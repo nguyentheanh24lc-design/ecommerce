@@ -150,6 +150,7 @@ public class Main {
       System.out.println("3. Xóa sản phẩm khỏi giỏ");
       System.out.println("4. Tìm theo ID hoặc tên sản phẩm");
       System.out.println("5. Xem giỏ hàng và tổng tiền");
+      System.out.println("6. Tạo đơn hàng từ giỏ");
       System.out.println("0. Quay lại");
       try {
         switch (readInt("Chọn chức năng: ")) {
@@ -179,6 +180,26 @@ public class Main {
             System.out.println("Số loại sản phẩm: " + cart.getItems().size());
             System.out.println("Tổng số lượng: " + cart.getTotalQuantity());
             System.out.println("Tổng tiền giỏ hàng: " + cart.calculateTotal());
+            break;
+          case 6:
+            if (cart.getItems().isEmpty()) {
+              System.out.println("Giỏ hàng trống, chưa thể tạo đơn.");
+              break;
+            }
+            showCartItems(cart.getItems());
+            System.out.println("Tổng tiền: " + cart.calculateTotal());
+            String orderId = readText("Nhập mã đơn hàng mới: ");
+            if (!readText("Xác nhận tạo đơn? (Y/N): ").equalsIgnoreCase("Y")) {
+              System.out.println("Đã hủy thao tác tạo đơn.");
+              break;
+            }
+            Order order = manager.createOrderFromCart(orderId, user.getId());
+            saveProducts();
+            System.out.println("Tạo đơn hàng thành công!");
+            System.out.println(order);
+            for (var item : order.getItems()) {
+              System.out.println(item);
+            }
             break;
           case 0: running = false; break;
           default: System.out.println("Lựa chọn không hợp lệ.");

@@ -8,13 +8,22 @@ public class OrderItem {
 
   private Product product;
   private int quantity;
+  private final double unitPrice;
 
   public OrderItem() {
     this(new Product(), 1);
   }
 
   public OrderItem(Product product, int quantity) {
+    this(product, quantity, product == null ? 0 : product.getPrice());
+  }
+
+  public OrderItem(Product product, int quantity, double unitPrice) {
     setProduct(product);
+    if (!Double.isFinite(unitPrice) || unitPrice <= 0) {
+      throw new IllegalArgumentException("Unit price must be finite and greater than 0.");
+    }
+    this.unitPrice = unitPrice;
 
     try {
       setQuantity(quantity);
@@ -66,7 +75,11 @@ public class OrderItem {
   // =========================
 
   public double calculateSubtotal() {
-    return product.getPrice() * quantity;
+    return unitPrice * quantity;
+  }
+
+  public double getUnitPrice() {
+    return unitPrice;
   }
 
   public void increaseQuantity(int amount) {
@@ -107,6 +120,7 @@ public class OrderItem {
         "productId='" + product.getId() + '\'' +
         ", productName='" + product.getName() + '\'' +
         ", quantity=" + quantity +
+        ", unitPrice=" + unitPrice +
         ", subtotal=" + calculateSubtotal() +
         '}';
   }

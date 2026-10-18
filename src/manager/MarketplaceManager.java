@@ -5,6 +5,8 @@ import model.Order;
 import model.Product;
 import model.Searchable;
 import model.User;
+import model.Buyer;
+import model.CartItem;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -218,6 +220,41 @@ public class MarketplaceManager implements Searchable<Product> {
   // =========================
   // ORDER MANAGEMENT
   // =========================
+
+  public Order createOrderFromCart(String orderId, String buyerId) {
+    User user = findUserById(buyerId);
+    if (!(user instanceof Buyer)) {
+      throw new IllegalArgumentException("Buyer does not exist.");
+    }
+    Buyer buyer = (Buyer) user;
+    Order order = new Order(orderId, buyer);
+    if (findOrderById(order.getId()) != null) {
+      throw new IllegalArgumentException("Order ID already exists.");
+    }
+    if (buyer.getCart().getItems().isEmpty()) {
+      throw new IllegalArgumentException("Cannot create an order from an empty cart.");
+    }
+
+    // Build and validate the entire order before changing stock or the cart.
+    for (CartItem item : buyer.getCart().getItems()) {
+      Product product = findProductById(item.getProduct().getId());
+      if (product == null || product != item.getProduct()) {
+        throw new IllegalArgumentException("Product is no longer available: "
+            + item.getProduct().getId() + ". Remove it from the cart and add it again.");
+      }
+      if (item.getQuantity() > product.getStock()) {
+        throw new IllegalArgumentException("Not enough stock for product: " + product.getId());
+      }
+      order.addItem(product, item.getQuantity());
+    }
+
+    for (var item : order.getItems()) {
+      item.getProduct().decreaseStock(item.getQuantity());
+    }
+    orders.add(order);
+    buyer.getCart().clear();
+    return order;
+  }
 
   public void addOrder(Order order) {
     if (order == null) {
