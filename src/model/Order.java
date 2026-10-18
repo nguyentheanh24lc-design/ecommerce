@@ -297,10 +297,10 @@ public class Order implements Identifiable {
 
   public void cancelOrder() {
 
-    if (status.equals(STATUS_COMPLETED)) {
+    if (!status.equals(STATUS_PENDING) && !status.equals(STATUS_CONFIRMED)) {
 
       throw new IllegalStateException(
-          "Completed orders cannot be cancelled."
+          "Only pending or confirmed orders can be cancelled."
       );
     }
 

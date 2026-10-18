@@ -167,6 +167,16 @@ public class MarketplaceManager implements Searchable<Product> {
       return false;
     }
 
+    for (Order order : orders) {
+      if (Order.STATUS_PENDING.equals(order.getStatus())
+          || Order.STATUS_CONFIRMED.equals(order.getStatus())) {
+        for (var item : order.getItems()) {
+          if (item.getProduct() == product) {
+            throw new IllegalArgumentException("Cannot remove a product in an active order.");
+          }
+        }
+      }
+    }
     return products.remove(product);
   }
 
@@ -294,6 +304,43 @@ public class MarketplaceManager implements Searchable<Product> {
 
   public List<Order> getOrders() {
     return Collections.unmodifiableList(orders);
+  }
+
+  private Order requireOrder(String orderId) {
+    Order order = findOrderById(orderId);
+    if (order == null) {
+      throw new IllegalArgumentException("Order does not exist.");
+    }
+    return order;
+  }
+
+  public void confirmOrder(String orderId) {
+    requireOrder(orderId).confirmOrder();
+  }
+
+  public void completeOrder(String orderId) {
+    requireOrder(orderId).completeOrder();
+  }
+
+  public void cancelOrder(String orderId) {
+    Order order = requireOrder(orderId);
+    if (!Order.STATUS_PENDING.equals(order.getStatus())
+        && !Order.STATUS_CONFIRMED.equals(order.getStatus())) {
+      throw new IllegalStateException("Only pending or confirmed orders can be cancelled.");
+    }
+    // Validate all stock restorations before changing any product or status.
+    for (var item : order.getItems()) {
+      if (findProductById(item.getProduct().getId()) != item.getProduct()) {
+        throw new IllegalStateException("Cannot restore stock: product is no longer available.");
+      }
+      if ((long) item.getProduct().getStock() + item.getQuantity() > Integer.MAX_VALUE) {
+        throw new IllegalStateException("Cannot restore stock: quantity exceeds the supported limit.");
+      }
+    }
+    order.cancelOrder();
+    for (var item : order.getItems()) {
+      item.getProduct().increaseStock(item.getQuantity());
+    }
   }
 
   // =========================

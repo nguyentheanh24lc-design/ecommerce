@@ -66,6 +66,10 @@ public class Main {
           cartMenu();
           break;
 
+        case 8:
+          orderMenu();
+          break;
+
         case 0:
           saveProducts();
           running = false;
@@ -124,6 +128,9 @@ public class Main {
         "7. Quản lý giỏ hàng"
     );
     System.out.println(
+        "8. Quản lý đơn hàng"
+    );
+    System.out.println(
         "0. Thoát"
     );
     System.out.println(
@@ -134,6 +141,71 @@ public class Main {
   // ==============================
   // PRODUCT MENU
   // ==============================
+
+  private static void orderMenu() {
+    boolean running = true;
+    while (running) {
+      System.out.println("\n--------- QUẢN LÝ ĐƠN HÀNG ---------");
+      System.out.println("1. Xem tất cả đơn hàng");
+      System.out.println("2. Tìm và xem chi tiết theo mã đơn");
+      System.out.println("3. Xác nhận đơn (PENDING -> CONFIRMED)");
+      System.out.println("4. Hoàn tất đơn (CONFIRMED -> COMPLETED)");
+      System.out.println("5. Hủy đơn và hoàn tồn kho");
+      System.out.println("0. Quay lại");
+      int choice = readInt("Chọn chức năng: ");
+      try {
+        switch (choice) {
+          case 1:
+            if (manager.getOrders().isEmpty()) {
+              System.out.println("Chưa có đơn hàng.");
+            }
+            for (Order order : manager.getOrders()) {
+              System.out.println(order);
+            }
+            break;
+          case 2:
+            Order order = manager.findOrderById(readText("Nhập mã đơn: "));
+            if (order == null) {
+              System.out.println("Không tìm thấy đơn hàng.");
+              break;
+            }
+            System.out.println(order);
+            for (var item : order.getItems()) {
+              System.out.println(item);
+            }
+            break;
+          case 3:
+            manager.confirmOrder(readText("Nhập mã đơn cần xác nhận: "));
+            System.out.println("Đã xác nhận đơn hàng.");
+            break;
+          case 4:
+            manager.completeOrder(readText("Nhập mã đơn cần hoàn tất: "));
+            System.out.println("Đã hoàn tất đơn hàng.");
+            break;
+          case 5:
+            String id = readText("Nhập mã đơn cần hủy: ");
+            Order cancelled = manager.findOrderById(id);
+            if (cancelled == null) {
+              System.out.println("Không tìm thấy đơn hàng.");
+              break;
+            }
+            System.out.println(cancelled);
+            if (!readText("Xác nhận hủy đơn và hoàn tồn kho? (Y/N): ").equalsIgnoreCase("Y")) {
+              System.out.println("Đã bỏ qua thao tác hủy đơn.");
+              break;
+            }
+            manager.cancelOrder(id);
+            saveProducts();
+            System.out.println("Đã hủy đơn và hoàn tồn kho.");
+            break;
+          case 0: running = false; break;
+          default: System.out.println("Lựa chọn không hợp lệ.");
+        }
+      } catch (IllegalArgumentException | IllegalStateException e) {
+        System.out.println("Không thể thực hiện: " + e.getMessage());
+      }
+    }
+  }
 
   private static void cartMenu() {
     User user = manager.findUserById(readText("Nhập ID Buyer: "));
@@ -660,8 +732,13 @@ public class Main {
       return;
     }
 
-    boolean removed =
-        manager.removeProduct(id);
+    boolean removed;
+    try {
+      removed = manager.removeProduct(id);
+    } catch (IllegalArgumentException e) {
+      System.out.println("Không thể xóa sản phẩm: " + e.getMessage());
+      return;
+    }
 
     if (removed) {
 
